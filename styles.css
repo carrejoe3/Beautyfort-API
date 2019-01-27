@@ -1,0 +1,17 @@
+.console {
+    width: 100%;
+    margin: 10% 0 0 0;
+}
+
+.btn {
+    float: left;
+    border-radius: 0px;
+}
+
+textarea {
+    height: 200px;
+}
+
+jumbotron text-center {
+    height: 350px;
+}
