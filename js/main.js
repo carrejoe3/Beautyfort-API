@@ -47,6 +47,5 @@ function buildRequest() {
 };
 
 $('.btn').click(function() {
-    console.log('this is working');
     sendRequest(buildRequest());
 });

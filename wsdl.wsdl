@@ -1,0 +1,2902 @@
+<wsdl:definitions xmlns:tns="http://www.beautyfort.com/api/" targetNamespace="http://www.beautyfort.com/api/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/">
+	<!-- Version 2 -->
+	<wsdl:types>
+	<s:schema elementFormDefault="qualified" targetNamespace="http://www.beautyfort.com/api/">
+		<s:element name="AuthHeader" type="tns:AuthHeader">
+	<s:annotation>
+		<s:documentation>
+			Authentication information for the customer on whose behalf the applicaiton is making the request. Only registered wholesale users with a valid API key are allowed to make API calls. As API calls do not pass session information you must pass the customers email address and API key with every SOAP API call.
+		</s:documentation>
+	</s:annotation>
+</s:element>
+
+<s:complexType name="AuthHeader">
+	<s:annotation>
+		<s:documentation>
+			Authenticaiton header used for SOAP API calls.
+		</s:documentation>
+	</s:annotation>
+	<s:sequence>
+		<s:element name="Username" type="s:string"></s:element>
+		<s:element name="Nonce" type="s:string"></s:element>
+		<s:element name="Created" type="s:dateTime"></s:element>
+		<s:element name="Password" type="s:string"></s:element>
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="ArrayOfStockFileField">
+	<s:annotation>
+		<s:documentation>
+			The fields to include in the returned stock file. Fields will be included in the supplied order.
+		</s:documentation>
+	</s:annotation>
+	<s:sequence>
+		<s:element name="StockFileField" type="tns:StockFileField" minOccurs="1" maxOccurs="unbounded" />
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="ArrayOfError"><s:sequence>
+		<s:element name="Error" type="tns:Error" minOccurs="0" maxOccurs="unbounded" />
+	</s:sequence>
+</s:complexType>
+<s:complexType name="ArrayOfWarning"><s:sequence>
+		<s:element name="Warning" type="tns:Warning" minOccurs="0" maxOccurs="unbounded" />
+	</s:sequence>
+</s:complexType>
+<s:complexType name="Error"><s:sequence>
+		<s:element name="Code" type="s:int"></s:element>
+		<s:element name="Description" type="s:string"></s:element>
+	</s:sequence>
+</s:complexType>
+<s:complexType name="Warning"><s:complexContent>
+		<s:extension base="tns:Error">
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:complexType name="OrderItem"><s:sequence>
+		<s:element name="OrderReference" type="s:int"></s:element>
+		<s:element name="YourOrderReference" type="s:string" minOccurs="0"></s:element>
+		<s:element name="ItemReference" type="s:int"></s:element>
+		<s:element name="Item" type="tns:Item"></s:element>
+		<s:element name="TotalQuantity" type="s:int">
+			<s:annotation>
+				<s:documentation>
+					The total quantity of the item ordered.
+				</s:documentation>
+			</s:annotation>
+		</s:element>
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="Item"><s:sequence>
+		<s:element name="StockCode" type="s:string"></s:element>
+		<s:element name="Name" type="s:string"></s:element>
+		<s:element name="QuantityAvailable" type="s:int"></s:element>
+		<s:element name="UnitPrice" type="tns:Amount"></s:element>
+		<s:element name="YourRating" type="tns:IntegerOneToFive" nillable="true"></s:element>
+		<s:element name="YourStockCode" type="s:string"></s:element>
+		<s:element name="ImageLastUpdated" type="s:dateTime" nillable="true"></s:element>
+		<s:element name="ThumbnailImageUrl" type="s:anyURI" nillable="true"></s:element>
+		<s:element name="HighResImageUrl" type="s:anyURI" nillable="true"></s:element>
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="Amount"><s:sequence>
+		<s:element name="Amount" type="tns:TwoPlacesDecimal"></s:element>
+	</s:sequence>
+	<s:attribute name="Currency" type="tns:Currency" use="required" />
+</s:complexType>
+
+<s:simpleType name="TwoPlacesDecimal">
+	<s:restriction base="s:decimal">
+		<s:fractionDigits fixed="true" value="2" />
+	</s:restriction>
+</s:simpleType>
+
+<s:simpleType name="IntegerOneToFive">
+	<s:restriction base="s:int">
+		<s:minInclusive value="1" />
+		<s:maxInclusive value="5" />
+	</s:restriction>
+</s:simpleType>
+
+<s:simpleType name="StringLength1">
+	<s:restriction base="s:string">
+		<s:length value="1" />
+	</s:restriction>
+</s:simpleType>
+
+<s:complexType name="DateRange"><s:sequence>
+		<s:element name="StartDate" type="s:date"></s:element>
+		<s:element name="EndDate" type="s:date"></s:element>
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="ArrayOfOrderOverview"><s:sequence>
+		<s:element name="OrderOverview" type="tns:OrderOverview" minOccurs="0" maxOccurs="unbounded" />
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="OrderOverview"><s:sequence>
+		<s:element name="OrderReference" type="s:int">
+			<s:annotation>
+				<s:documentation>
+					The Beauty Fort order reference. This value is used to request details of the order from the GetOrderDetail method.
+				</s:documentation>
+			</s:annotation>
+		</s:element>
+		<s:element name="YourOrderReference" type="s:string" nillable="true">
+			<s:annotation>
+				<s:documentation>
+					The customers order reference. This value can be used to request details of the order from the GetOrderDetail method.
+				</s:documentation>
+			</s:annotation>
+		</s:element>
+		<s:element name="Type" type="tns:OrderType"></s:element>
+		<s:element name="Status" type="tns:OrderStatus"></s:element>
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="OrderDetail">
+	<s:annotation>
+		<s:documentation>
+			Details of a single order.
+		</s:documentation>
+	</s:annotation>
+	<s:sequence>
+		<s:element name="OrderReference" type="s:int">
+			<s:annotation>
+				<s:documentation>
+					The Beauty Fort order reference.
+				</s:documentation>
+			</s:annotation>
+		</s:element>
+		<s:element name="YourOrderReference" type="s:string" nillable="true">
+			<s:annotation>
+				<s:documentation>
+					The customers order reference.
+				</s:documentation>
+			</s:annotation>
+		</s:element>
+		<s:element name="Type" type="tns:OrderType">
+			<s:annotation>
+				<s:documentation>
+					The order type.
+				</s:documentation>
+			</s:annotation>
+		</s:element>
+		<s:element name="Status" type="tns:OrderStatus">
+			<s:annotation>
+				<s:documentation>
+					The status of the order.
+				</s:documentation>
+			</s:annotation>
+		</s:element>
+		<s:element name="OrderCostSummary" type="tns:OrderCostSummary">
+			<s:annotation>
+				<s:documentation>
+					Summary details of the cost of the order.
+				</s:documentation>
+			</s:annotation>
+		</s:element>
+		<s:element name="DeliveryOption" type="tns:DeliveryOption" minOccurs="0"></s:element>
+		<s:element name="OrderItems" type="tns:ArrayOfOrderItem" minOccurs="0">
+			<s:annotation>
+				<s:documentation>
+					Details of the items in the order.
+				</s:documentation>
+			</s:annotation>
+		</s:element>
+		<s:element name="BreakBulkOrderItems" type="tns:ArrayOfBreakBulkOrderItem" minOccurs="0">
+			<s:annotation>
+				<s:documentation>
+					Details of the break bulk items in the order.
+				</s:documentation>
+			</s:annotation>
+		</s:element>
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="OrderCostSummary"><s:sequence>
+		<s:element name="OrderTotalExVat" type="tns:Amount"></s:element>
+		<s:element name="Discount" type="tns:Amount" minOccurs="0"></s:element>
+		<s:element name="Vat" type="tns:Amount" minOccurs="0"></s:element>
+		<s:element name="OrderTotal" type="tns:Amount"></s:element>
+		<s:element name="AccountCreditUsed" type="tns:Amount" minOccurs="0"></s:element>
+		<s:element name="PaymentRequired" type="tns:Amount" minOccurs="0"></s:element>
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="ArrayOfOrderItem"><s:sequence>
+		<s:element name="OrderItem" type="tns:OrderItem" minOccurs="0" maxOccurs="unbounded" />
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="Address">
+	<s:annotation>
+		<s:documentation>
+			Object representing a single address.
+		</s:documentation>
+	</s:annotation>
+	<s:sequence>
+		<s:element name="CompanyName" type="s:string" minOccurs="0"></s:element>
+		<s:element name="Address1" type="s:string"></s:element>
+		<s:element name="Address2" type="s:string" minOccurs="0"></s:element>
+		<s:element name="Address3" type="s:string" minOccurs="0"></s:element>
+		<s:element name="Town" type="s:string"></s:element>
+		<s:element name="County" type="s:string" minOccurs="0"></s:element>
+		<s:element name="Postcode" type="s:string" nillable="true">
+			<s:annotation>
+				<s:documentation>
+					Required for all countries except Republic of Ireland.
+				</s:documentation>
+			</s:annotation>
+		</s:element>
+		<s:element name="CountryCode" type="tns:CountryCode"></s:element>
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="ArrayOfStockCode"><s:sequence>
+		<s:element name="StockCode" type="s:string" minOccurs="0" maxOccurs="unbounded" />
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="ArrayOfItem"><s:sequence>
+		<s:element name="Item" type="tns:Item" minOccurs="0" maxOccurs="unbounded" />
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="ArrayOfTransaction"><s:sequence>
+		<s:element name="Transaction" type="tns:Transaction" minOccurs="0" maxOccurs="unbounded" />
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="Transaction"><s:sequence>
+		<s:element name="Date" type="s:dateTime"></s:element>
+		<s:element name="DueDate" type="s:date" nillable="true"></s:element>
+		<s:element name="Description" type="s:string"></s:element>
+		<s:element name="Debit" type="tns:Amount" nillable="true"></s:element>
+		<s:element name="Credit" type="tns:Amount" nillable="true"></s:element>
+		<s:element name="Balance" type="tns:Amount"></s:element>
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="ArrayOfAccountInformationType"><s:sequence>
+		<s:element name="AccountInformationType" type="tns:AccountInformationType" minOccurs="0" maxOccurs="unbounded" />
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="ArrayOfWholesaleDeliveryOption"><s:sequence>
+		<s:element name="WholesaleDeliveryOption" type="tns:WholesaleDeliveryOption" minOccurs="0" maxOccurs="unbounded" />
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="ArrayOfDirectDispatchDeliveryOption"><s:sequence>
+		<s:element name="DirectDispatchDeliveryOption" type="tns:DirectDispatchDeliveryOption" minOccurs="0" maxOccurs="unbounded" />
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="AbstractDeliveryOption" abstract="true"><s:sequence>
+		<s:element name="ID" type="s:int"></s:element>
+		<s:element name="CountryCode" type="tns:CountryCode"></s:element>
+		<s:element name="Name" type="s:string"></s:element>
+		<s:element name="Price" type="tns:Amount"></s:element>
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="WholesaleDeliveryOption"><s:complexContent>
+		<s:extension base="tns:AbstractDeliveryOption">
+			<s:sequence>
+				<s:element name="Threshold" type="tns:Amount" minOccurs="0"></s:element>
+				<s:element name="OverThresholdPrice" type="tns:Amount" minOccurs="0"></s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:complexType name="DirectDispatchDeliveryOption"><s:complexContent>
+		<s:extension base="tns:AbstractDeliveryOption">
+			<s:sequence>
+				
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:complexType name="DeliveryOption">
+	<s:annotation>
+		<s:documentation>
+			All fields except ID are ignored in a request.
+		</s:documentation>
+	</s:annotation>
+	<s:complexContent>
+		<s:restriction base="tns:AbstractDeliveryOption">
+			<s:sequence>
+				<s:element name="ID" type="s:int" />
+				<s:element name="CountryCode" type="tns:CountryCode" minOccurs="0" />
+				<s:element name="Name" type="s:string" minOccurs="0" />
+				<s:element name="Price" type="tns:Amount" minOccurs="0" />
+			</s:sequence>
+		</s:restriction>
+	</s:complexContent>
+</s:complexType>
+
+<s:complexType name="ArrayOfPaymentMethod"><s:sequence>
+		<s:element name="PaymentMethod" type="tns:PaymentMethod" minOccurs="0" maxOccurs="unbounded" />
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="PaymentMethod"><s:sequence>
+		<s:element name="ID" type="s:int"></s:element>
+		<s:element name="Name" type="s:string" minOccurs="0"></s:element>
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="PictureFees"><s:sequence>
+		<s:element name="Fee" type="tns:Amount"></s:element>
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="BreakBulkFees"><s:sequence>
+		<s:element name="FirstItemFee" type="tns:Amount"></s:element>
+		<s:element name="AdditionalItemFee" type="tns:Amount"></s:element>
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="DirectDispatchFees"><s:sequence>
+		<s:element name="CancellationFee" type="tns:Amount"></s:element>
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="AbstractSkuDetail" abstract="true"><s:sequence>
+		<s:element name="ID" type="s:int"></s:element>
+		<s:element name="Name" type="s:string" minOccurs="0"></s:element>
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="ArrayOfCategory"><s:sequence>
+		<s:element name="Category" type="tns:Category" minOccurs="0" maxOccurs="unbounded" />
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="Category"><s:complexContent>
+		<s:extension base="tns:AbstractSkuDetail">
+			<s:sequence>
+				<s:element name="ParentID" type="s:int" minOccurs="0"></s:element>
+				<s:element name="ParentName" type="s:string" minOccurs="0"></s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:complexType name="ArrayOfBrand"><s:sequence>
+		<s:element name="Brand" type="tns:Brand" minOccurs="0" maxOccurs="unbounded" />
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="Brand"><s:complexContent>
+		<s:extension base="tns:AbstractSkuDetail">
+			
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:complexType name="ArrayOfProductType"><s:sequence>
+		<s:element name="ProductType" type="tns:ProductType" minOccurs="0" maxOccurs="unbounded" />
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="ProductType"><s:complexContent>
+		<s:extension base="tns:AbstractSkuDetail">
+			
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:complexType name="ArrayOfGender"><s:sequence>
+		<s:element name="Gender" type="tns:Gender" minOccurs="0" maxOccurs="unbounded" />
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="Gender"><s:complexContent>
+		<s:extension base="tns:AbstractSkuDetail">
+			
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:complexType name="PriceRange"><s:sequence>
+		<s:element name="Lower" type="tns:TwoPlacesDecimal" minOccurs="0" />
+		<s:element name="Upper" type="tns:TwoPlacesDecimal" minOccurs="0" />
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="ArrayOfBreakBulkItem"><s:sequence>
+		<s:element name="BreakBulkItem" type="tns:BreakBulkItem" minOccurs="1" maxOccurs="unbounded" />
+	</s:sequence>
+</s:complexType>
+<s:complexType name="BreakBulkItem"><s:sequence>
+		<s:element name="StockCode" type="s:string"></s:element>
+		<s:element name="Item" type="tns:Item" minOccurs="0"></s:element>
+		<s:element name="Quantity" type="s:int">
+			<s:annotation>
+				<s:documentation>
+					The quantity of the item to include in each break bulk item.
+				</s:documentation>
+			</s:annotation>
+		</s:element>
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="ArrayOfBreakBulkReference"><s:sequence>
+		<s:element name="BreakBulkReference" type="tns:BreakBulkReference" minOccurs="1" maxOccurs="unbounded" />
+	</s:sequence>
+</s:complexType>
+<s:complexType name="BreakBulkReference"><s:sequence>
+		<s:element name="Reference" type="s:string"></s:element>
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="ArrayOfBreakBulkOrderItem"><s:sequence>
+		<s:element name="BreakBulkOrderItem" type="tns:BreakBulkOrderItem" minOccurs="0" maxOccurs="unbounded" />
+	</s:sequence>
+</s:complexType>
+
+<s:complexType name="BreakBulkOrderItem"><s:sequence>
+		<s:element name="OrderReference" type="s:int"></s:element>
+		<s:element name="YourOrderReference" type="s:string" minOccurs="0"></s:element>
+		<s:element name="BreakBulkItemReference" type="s:int"></s:element>
+		<s:element name="Items" type="tns:ArrayOfBreakBulkItem"></s:element>
+		<s:element name="References" type="tns:ArrayOfBreakBulkReference"></s:element>
+		<s:element name="TotalQuantity" type="s:int">
+			<s:annotation>
+				<s:documentation>
+					The total quantity of the break bulk item ordered.
+				</s:documentation>
+			</s:annotation>
+		</s:element>
+		<s:element name="TotalBreakBulkCosts" type="tns:Amount">
+			<s:annotation>
+				<s:documentation>
+					The total break bulk costs for the break bulk item.
+				</s:documentation>
+			</s:annotation>
+		</s:element>
+	</s:sequence>
+</s:complexType>		<s:simpleType name="FileFormat">
+	<s:restriction base="s:string">		<s:enumeration value="Delimited">
+			<s:annotation>
+				<s:documentation>
+					Delimited file format.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="XML">
+			<s:annotation>
+				<s:documentation>
+					XML file format.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="JSON">
+			<s:annotation>
+				<s:documentation>
+					JSON file format.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="XLSX">
+			<s:annotation>
+				<s:documentation>
+					XLSX file format.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>	</s:restriction>
+</s:simpleType>
+
+<s:simpleType name="StockFileField">
+	<s:restriction base="s:string">		<s:enumeration value="StockCode">
+			<s:annotation>
+				<s:documentation>
+					The Beauty Fort stock code for the sku.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="Category">
+			<s:annotation>
+				<s:documentation>
+					The category for the sku.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="Brand">
+			<s:annotation>
+				<s:documentation>
+					The brand for the sku.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="Collection">
+			<s:annotation>
+				<s:documentation>
+					The collection for the sku.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="Type">
+			<s:annotation>
+				<s:documentation>
+					The product type for the sku.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="Description">
+			<s:annotation>
+				<s:documentation>
+					The Beauty Fort description for the sku.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="Size">
+			<s:annotation>
+				<s:documentation>
+					The size, in ml/g, for the sku.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="Gender">
+			<s:annotation>
+				<s:documentation>
+					The gender for the sku. This field will contain M for Male, F for Female or U for Unisex.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="StockLevel">
+			<s:annotation>
+				<s:documentation>
+					The available stock level for the sku.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="Price">
+			<s:annotation>
+				<s:documentation>
+					The price for the sku.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="Barcode">
+			<s:annotation>
+				<s:documentation>
+					The barcode, or barcodes, for the sku. Where there are multiple barcodes for the sku these are comma separated.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="YourRating">
+			<s:annotation>
+				<s:documentation>
+					The customers rating, if any, for the sku. Valid ratings are between 1 and 5.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="YourStockCode">
+			<s:annotation>
+				<s:documentation>
+					The customers stock code, if any, for the sku.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="LastPurchasedDate">
+			<s:annotation>
+				<s:documentation>
+					The date the sku was last purchased by the customer.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="LastPurchasedPrice">
+			<s:annotation>
+				<s:documentation>
+					The last price paid by the customer for the sku.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="ImageLastUpdated">
+			<s:annotation>
+				<s:documentation>
+					The date/time the image was last updated for the item.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="ThumbnailImageUrl">
+			<s:annotation>
+				<s:documentation>
+					The URL of a thumbnail image for the sku.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="HighResImageUrl">
+			<s:annotation>
+				<s:documentation>
+					The URL of a high resolution image for the sku.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="FullName">
+			<s:annotation>
+				<s:documentation>
+					The Beauty Fort full name for the sku.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="RRP">
+			<s:annotation>
+				<s:documentation>
+					The recommended retail price for the sku.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="Quantity">
+			<s:annotation>
+				<s:documentation>
+					The quantity of the sku to order. This value will always be returned blank.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="BreakBulkReference">
+			<s:annotation>
+				<s:documentation>
+					The break bulk reference to apply to the line. This value will always be returned blank.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>	</s:restriction>
+</s:simpleType>
+
+<s:simpleType name="StockFileSort">
+	<s:restriction base="s:string">		<s:enumeration value="StockCode"></s:enumeration>		<s:enumeration value="Category"></s:enumeration>		<s:enumeration value="Brand"></s:enumeration>		<s:enumeration value="StockLevel"></s:enumeration>		<s:enumeration value="Price"></s:enumeration>		<s:enumeration value="FullName"></s:enumeration>	</s:restriction>
+</s:simpleType>
+
+<s:simpleType name="OrderType">
+	<s:restriction base="s:string">		<s:enumeration value="Wholesale"></s:enumeration>		<s:enumeration value="Direct Dispatch"></s:enumeration>	</s:restriction>
+</s:simpleType>
+
+<s:simpleType name="OrderStatus">
+	<s:restriction base="s:string">		<s:enumeration value="New"></s:enumeration>		<s:enumeration value="Payment Hold"></s:enumeration>		<s:enumeration value="Processing"></s:enumeration>		<s:enumeration value="Dispatched"></s:enumeration>		<s:enumeration value="Cancelled"></s:enumeration>	</s:restriction>
+</s:simpleType>
+
+<s:simpleType name="Currency">
+	<s:restriction base="s:string">		<s:enumeration value="GBP">
+			<s:annotation>
+				<s:documentation>
+					GBP currency.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="EUR">
+			<s:annotation>
+				<s:documentation>
+					EUR currency.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="DKK">
+			<s:annotation>
+				<s:documentation>
+					DKK currency.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="CZK">
+			<s:annotation>
+				<s:documentation>
+					CZK currency.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="NOK">
+			<s:annotation>
+				<s:documentation>
+					NOK currency.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="PLN">
+			<s:annotation>
+				<s:documentation>
+					PLN currency.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="SEK">
+			<s:annotation>
+				<s:documentation>
+					SEK currency.
+				</s:documentation>
+			</s:annotation>
+		</s:enumeration>	</s:restriction>
+</s:simpleType>
+
+<s:simpleType name="CountryCode">
+	<s:restriction base="s:string">		<s:enumeration value="AD">
+			<s:annotation>
+				<s:documentation>
+					Andorra				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="AE">
+			<s:annotation>
+				<s:documentation>
+					United Arab Emirates				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="AF">
+			<s:annotation>
+				<s:documentation>
+					Afghanistan				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="AG">
+			<s:annotation>
+				<s:documentation>
+					Antigua and Barbuda				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="AI">
+			<s:annotation>
+				<s:documentation>
+					Anguilla				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="AL">
+			<s:annotation>
+				<s:documentation>
+					Albania				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="AM">
+			<s:annotation>
+				<s:documentation>
+					Armenia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="AN">
+			<s:annotation>
+				<s:documentation>
+					Netherlands Antilles				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="AO">
+			<s:annotation>
+				<s:documentation>
+					Angola				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="AR">
+			<s:annotation>
+				<s:documentation>
+					Argentina				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="AS">
+			<s:annotation>
+				<s:documentation>
+					American Samoa				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="AT">
+			<s:annotation>
+				<s:documentation>
+					Austria				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="AU">
+			<s:annotation>
+				<s:documentation>
+					Australia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="AW">
+			<s:annotation>
+				<s:documentation>
+					Aruba				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="AZ">
+			<s:annotation>
+				<s:documentation>
+					Azerbaijan				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="BA">
+			<s:annotation>
+				<s:documentation>
+					Bosnia and Herzegovina				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="BB">
+			<s:annotation>
+				<s:documentation>
+					Barbados				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="BD">
+			<s:annotation>
+				<s:documentation>
+					Bangladesh				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="BE">
+			<s:annotation>
+				<s:documentation>
+					Belgium				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="BF">
+			<s:annotation>
+				<s:documentation>
+					Burkina Faso				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="BG">
+			<s:annotation>
+				<s:documentation>
+					Bulgaria				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="BH">
+			<s:annotation>
+				<s:documentation>
+					Bahrain				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="BI">
+			<s:annotation>
+				<s:documentation>
+					Burundi				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="BJ">
+			<s:annotation>
+				<s:documentation>
+					Benin				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="BM">
+			<s:annotation>
+				<s:documentation>
+					Bermuda				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="BN">
+			<s:annotation>
+				<s:documentation>
+					Brunei Darussalam				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="BO">
+			<s:annotation>
+				<s:documentation>
+					Bolivia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="BR">
+			<s:annotation>
+				<s:documentation>
+					Brazil				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="BS">
+			<s:annotation>
+				<s:documentation>
+					Bahamas				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="BT">
+			<s:annotation>
+				<s:documentation>
+					Bhutan				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="BW">
+			<s:annotation>
+				<s:documentation>
+					Botswana				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="BY">
+			<s:annotation>
+				<s:documentation>
+					Belarus				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="BZ">
+			<s:annotation>
+				<s:documentation>
+					Belize				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="CA">
+			<s:annotation>
+				<s:documentation>
+					Canada				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="CD">
+			<s:annotation>
+				<s:documentation>
+					Congo, the Democratic Republic of the				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="CF">
+			<s:annotation>
+				<s:documentation>
+					Central African Republic				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="CG">
+			<s:annotation>
+				<s:documentation>
+					Congo				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="CH">
+			<s:annotation>
+				<s:documentation>
+					Switzerland				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="CI">
+			<s:annotation>
+				<s:documentation>
+					Cote D'Ivoire				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="CK">
+			<s:annotation>
+				<s:documentation>
+					Cook Islands				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="CL">
+			<s:annotation>
+				<s:documentation>
+					Chile				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="CM">
+			<s:annotation>
+				<s:documentation>
+					Cameroon				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="CN">
+			<s:annotation>
+				<s:documentation>
+					China				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="CO">
+			<s:annotation>
+				<s:documentation>
+					Colombia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="CR">
+			<s:annotation>
+				<s:documentation>
+					Costa Rica				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="CU">
+			<s:annotation>
+				<s:documentation>
+					Cuba				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="CV">
+			<s:annotation>
+				<s:documentation>
+					Cape Verde				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="CY">
+			<s:annotation>
+				<s:documentation>
+					Cyprus				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="CZ">
+			<s:annotation>
+				<s:documentation>
+					Czech Republic				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="DE">
+			<s:annotation>
+				<s:documentation>
+					Germany				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="DJ">
+			<s:annotation>
+				<s:documentation>
+					Djibouti				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="DK">
+			<s:annotation>
+				<s:documentation>
+					Denmark				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="DM">
+			<s:annotation>
+				<s:documentation>
+					Dominica				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="DO">
+			<s:annotation>
+				<s:documentation>
+					Dominican Republic				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="DZ">
+			<s:annotation>
+				<s:documentation>
+					Algeria				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="EC">
+			<s:annotation>
+				<s:documentation>
+					Ecuador				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="EE">
+			<s:annotation>
+				<s:documentation>
+					Estonia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="EG">
+			<s:annotation>
+				<s:documentation>
+					Egypt				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="EH">
+			<s:annotation>
+				<s:documentation>
+					Western Sahara				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="ER">
+			<s:annotation>
+				<s:documentation>
+					Eritrea				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="ES">
+			<s:annotation>
+				<s:documentation>
+					Spain				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="ET">
+			<s:annotation>
+				<s:documentation>
+					Ethiopia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="FI">
+			<s:annotation>
+				<s:documentation>
+					Finland				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="FJ">
+			<s:annotation>
+				<s:documentation>
+					Fiji				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="FK">
+			<s:annotation>
+				<s:documentation>
+					Falkland Islands (Malvinas)				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="FM">
+			<s:annotation>
+				<s:documentation>
+					Micronesia, Federated States of				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="FO">
+			<s:annotation>
+				<s:documentation>
+					Faroe Islands				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="FR">
+			<s:annotation>
+				<s:documentation>
+					France				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="GA">
+			<s:annotation>
+				<s:documentation>
+					Gabon				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="GB">
+			<s:annotation>
+				<s:documentation>
+					United Kingdom				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="GD">
+			<s:annotation>
+				<s:documentation>
+					Grenada				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="GE">
+			<s:annotation>
+				<s:documentation>
+					Georgia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="GF">
+			<s:annotation>
+				<s:documentation>
+					French Guiana				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="GH">
+			<s:annotation>
+				<s:documentation>
+					Ghana				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="GI">
+			<s:annotation>
+				<s:documentation>
+					Gibraltar				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="GL">
+			<s:annotation>
+				<s:documentation>
+					Greenland				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="GM">
+			<s:annotation>
+				<s:documentation>
+					Gambia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="GN">
+			<s:annotation>
+				<s:documentation>
+					Guinea				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="GP">
+			<s:annotation>
+				<s:documentation>
+					Guadeloupe				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="GQ">
+			<s:annotation>
+				<s:documentation>
+					Equatorial Guinea				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="GR">
+			<s:annotation>
+				<s:documentation>
+					Greece				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="GT">
+			<s:annotation>
+				<s:documentation>
+					Guatemala				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="GU">
+			<s:annotation>
+				<s:documentation>
+					Guam				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="GW">
+			<s:annotation>
+				<s:documentation>
+					Guinea-Bissau				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="GY">
+			<s:annotation>
+				<s:documentation>
+					Guyana				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="HK">
+			<s:annotation>
+				<s:documentation>
+					Hong Kong				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="HN">
+			<s:annotation>
+				<s:documentation>
+					Honduras				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="HR">
+			<s:annotation>
+				<s:documentation>
+					Croatia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="HT">
+			<s:annotation>
+				<s:documentation>
+					Haiti				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="HU">
+			<s:annotation>
+				<s:documentation>
+					Hungary				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="ID">
+			<s:annotation>
+				<s:documentation>
+					Indonesia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="IE">
+			<s:annotation>
+				<s:documentation>
+					Republic of Ireland				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="IL">
+			<s:annotation>
+				<s:documentation>
+					Israel				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="IN">
+			<s:annotation>
+				<s:documentation>
+					India				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="IQ">
+			<s:annotation>
+				<s:documentation>
+					Iraq				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="IR">
+			<s:annotation>
+				<s:documentation>
+					Iran, Islamic Republic of				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="IS">
+			<s:annotation>
+				<s:documentation>
+					Iceland				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="IT">
+			<s:annotation>
+				<s:documentation>
+					Italy				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="JM">
+			<s:annotation>
+				<s:documentation>
+					Jamaica				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="JO">
+			<s:annotation>
+				<s:documentation>
+					Jordan				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="JP">
+			<s:annotation>
+				<s:documentation>
+					Japan				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="KE">
+			<s:annotation>
+				<s:documentation>
+					Kenya				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="KG">
+			<s:annotation>
+				<s:documentation>
+					Kyrgyzstan				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="KH">
+			<s:annotation>
+				<s:documentation>
+					Cambodia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="KI">
+			<s:annotation>
+				<s:documentation>
+					Kiribati				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="KM">
+			<s:annotation>
+				<s:documentation>
+					Comoros				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="KN">
+			<s:annotation>
+				<s:documentation>
+					Saint Kitts and Nevis				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="KP">
+			<s:annotation>
+				<s:documentation>
+					Korea, Democratic People's Republic of				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="KR">
+			<s:annotation>
+				<s:documentation>
+					Korea, Republic of				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="KW">
+			<s:annotation>
+				<s:documentation>
+					Kuwait				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="KY">
+			<s:annotation>
+				<s:documentation>
+					Cayman Islands				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="KZ">
+			<s:annotation>
+				<s:documentation>
+					Kazakhstan				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="LA">
+			<s:annotation>
+				<s:documentation>
+					Lao People's Democratic Republic				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="LB">
+			<s:annotation>
+				<s:documentation>
+					Lebanon				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="LC">
+			<s:annotation>
+				<s:documentation>
+					Saint Lucia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="LI">
+			<s:annotation>
+				<s:documentation>
+					Liechtenstein				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="LK">
+			<s:annotation>
+				<s:documentation>
+					Sri Lanka				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="LR">
+			<s:annotation>
+				<s:documentation>
+					Liberia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="LS">
+			<s:annotation>
+				<s:documentation>
+					Lesotho				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="LT">
+			<s:annotation>
+				<s:documentation>
+					Lithuania				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="LU">
+			<s:annotation>
+				<s:documentation>
+					Luxembourg				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="LV">
+			<s:annotation>
+				<s:documentation>
+					Latvia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="LY">
+			<s:annotation>
+				<s:documentation>
+					Libyan Arab Jamahiriya				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="MA">
+			<s:annotation>
+				<s:documentation>
+					Morocco				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="MC">
+			<s:annotation>
+				<s:documentation>
+					Monaco				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="MD">
+			<s:annotation>
+				<s:documentation>
+					Moldova, Republic of				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="MG">
+			<s:annotation>
+				<s:documentation>
+					Madagascar				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="MH">
+			<s:annotation>
+				<s:documentation>
+					Marshall Islands				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="MK">
+			<s:annotation>
+				<s:documentation>
+					Macedonia, the Former Yugoslav Republic of				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="ML">
+			<s:annotation>
+				<s:documentation>
+					Mali				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="MM">
+			<s:annotation>
+				<s:documentation>
+					Myanmar				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="MN">
+			<s:annotation>
+				<s:documentation>
+					Mongolia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="MO">
+			<s:annotation>
+				<s:documentation>
+					Macao				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="MP">
+			<s:annotation>
+				<s:documentation>
+					Northern Mariana Islands				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="MQ">
+			<s:annotation>
+				<s:documentation>
+					Martinique				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="MR">
+			<s:annotation>
+				<s:documentation>
+					Mauritania				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="MS">
+			<s:annotation>
+				<s:documentation>
+					Montserrat				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="MT">
+			<s:annotation>
+				<s:documentation>
+					Malta				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="MU">
+			<s:annotation>
+				<s:documentation>
+					Mauritius				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="MV">
+			<s:annotation>
+				<s:documentation>
+					Maldives				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="MW">
+			<s:annotation>
+				<s:documentation>
+					Malawi				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="MX">
+			<s:annotation>
+				<s:documentation>
+					Mexico				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="MY">
+			<s:annotation>
+				<s:documentation>
+					Malaysia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="MZ">
+			<s:annotation>
+				<s:documentation>
+					Mozambique				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="NA">
+			<s:annotation>
+				<s:documentation>
+					Namibia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="NC">
+			<s:annotation>
+				<s:documentation>
+					New Caledonia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="NE">
+			<s:annotation>
+				<s:documentation>
+					Niger				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="NF">
+			<s:annotation>
+				<s:documentation>
+					Norfolk Island				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="NG">
+			<s:annotation>
+				<s:documentation>
+					Nigeria				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="NI">
+			<s:annotation>
+				<s:documentation>
+					Nicaragua				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="NL">
+			<s:annotation>
+				<s:documentation>
+					Netherlands				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="NO">
+			<s:annotation>
+				<s:documentation>
+					Norway				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="NP">
+			<s:annotation>
+				<s:documentation>
+					Nepal				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="NR">
+			<s:annotation>
+				<s:documentation>
+					Nauru				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="NU">
+			<s:annotation>
+				<s:documentation>
+					Niue				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="NZ">
+			<s:annotation>
+				<s:documentation>
+					New Zealand				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="OM">
+			<s:annotation>
+				<s:documentation>
+					Oman				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="PA">
+			<s:annotation>
+				<s:documentation>
+					Panama				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="PE">
+			<s:annotation>
+				<s:documentation>
+					Peru				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="PF">
+			<s:annotation>
+				<s:documentation>
+					French Polynesia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="PG">
+			<s:annotation>
+				<s:documentation>
+					Papua New Guinea				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="PH">
+			<s:annotation>
+				<s:documentation>
+					Philippines				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="PK">
+			<s:annotation>
+				<s:documentation>
+					Pakistan				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="PL">
+			<s:annotation>
+				<s:documentation>
+					Poland				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="PM">
+			<s:annotation>
+				<s:documentation>
+					Saint Pierre and Miquelon				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="PN">
+			<s:annotation>
+				<s:documentation>
+					Pitcairn				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="PR">
+			<s:annotation>
+				<s:documentation>
+					Puerto Rico				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="PT">
+			<s:annotation>
+				<s:documentation>
+					Portugal				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="PW">
+			<s:annotation>
+				<s:documentation>
+					Palau				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="PY">
+			<s:annotation>
+				<s:documentation>
+					Paraguay				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="QA">
+			<s:annotation>
+				<s:documentation>
+					Qatar				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="RE">
+			<s:annotation>
+				<s:documentation>
+					Reunion				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="RO">
+			<s:annotation>
+				<s:documentation>
+					Romania				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="RU">
+			<s:annotation>
+				<s:documentation>
+					Russian Federation				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="RW">
+			<s:annotation>
+				<s:documentation>
+					Rwanda				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="SA">
+			<s:annotation>
+				<s:documentation>
+					Saudi Arabia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="SB">
+			<s:annotation>
+				<s:documentation>
+					Solomon Islands				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="SC">
+			<s:annotation>
+				<s:documentation>
+					Seychelles				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="SD">
+			<s:annotation>
+				<s:documentation>
+					Sudan				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="SE">
+			<s:annotation>
+				<s:documentation>
+					Sweden				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="SG">
+			<s:annotation>
+				<s:documentation>
+					Singapore				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="SH">
+			<s:annotation>
+				<s:documentation>
+					Saint Helena				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="SI">
+			<s:annotation>
+				<s:documentation>
+					Slovenia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="SJ">
+			<s:annotation>
+				<s:documentation>
+					Svalbard and Jan Mayen				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="SK">
+			<s:annotation>
+				<s:documentation>
+					Slovakia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="SL">
+			<s:annotation>
+				<s:documentation>
+					Sierra Leone				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="SM">
+			<s:annotation>
+				<s:documentation>
+					San Marino				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="SN">
+			<s:annotation>
+				<s:documentation>
+					Senegal				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="SO">
+			<s:annotation>
+				<s:documentation>
+					Somalia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="SR">
+			<s:annotation>
+				<s:documentation>
+					Suriname				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="ST">
+			<s:annotation>
+				<s:documentation>
+					Sao Tome and Principe				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="SV">
+			<s:annotation>
+				<s:documentation>
+					El Salvador				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="SY">
+			<s:annotation>
+				<s:documentation>
+					Syrian Arab Republic				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="SZ">
+			<s:annotation>
+				<s:documentation>
+					Swaziland				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="TC">
+			<s:annotation>
+				<s:documentation>
+					Turks and Caicos Islands				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="TD">
+			<s:annotation>
+				<s:documentation>
+					Chad				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="TG">
+			<s:annotation>
+				<s:documentation>
+					Togo				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="TH">
+			<s:annotation>
+				<s:documentation>
+					Thailand				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="TJ">
+			<s:annotation>
+				<s:documentation>
+					Tajikistan				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="TK">
+			<s:annotation>
+				<s:documentation>
+					Tokelau				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="TM">
+			<s:annotation>
+				<s:documentation>
+					Turkmenistan				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="TN">
+			<s:annotation>
+				<s:documentation>
+					Tunisia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="TO">
+			<s:annotation>
+				<s:documentation>
+					Tonga				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="TR">
+			<s:annotation>
+				<s:documentation>
+					Turkey				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="TT">
+			<s:annotation>
+				<s:documentation>
+					Trinidad and Tobago				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="TV">
+			<s:annotation>
+				<s:documentation>
+					Tuvalu				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="TW">
+			<s:annotation>
+				<s:documentation>
+					Taiwan, Province of China				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="TZ">
+			<s:annotation>
+				<s:documentation>
+					Tanzania, United Republic of				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="UA">
+			<s:annotation>
+				<s:documentation>
+					Ukraine				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="UG">
+			<s:annotation>
+				<s:documentation>
+					Uganda				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="US">
+			<s:annotation>
+				<s:documentation>
+					United States				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="UY">
+			<s:annotation>
+				<s:documentation>
+					Uruguay				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="UZ">
+			<s:annotation>
+				<s:documentation>
+					Uzbekistan				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="VA">
+			<s:annotation>
+				<s:documentation>
+					Holy See (Vatican City State)				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="VC">
+			<s:annotation>
+				<s:documentation>
+					Saint Vincent and the Grenadines				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="VE">
+			<s:annotation>
+				<s:documentation>
+					Venezuela				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="VG">
+			<s:annotation>
+				<s:documentation>
+					Virgin Islands, British				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="VI">
+			<s:annotation>
+				<s:documentation>
+					Virgin Islands, U.s.				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="VN">
+			<s:annotation>
+				<s:documentation>
+					Viet Nam				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="VU">
+			<s:annotation>
+				<s:documentation>
+					Vanuatu				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="WF">
+			<s:annotation>
+				<s:documentation>
+					Wallis and Futuna				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="WS">
+			<s:annotation>
+				<s:documentation>
+					Samoa				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="YE">
+			<s:annotation>
+				<s:documentation>
+					Yemen				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="ZA">
+			<s:annotation>
+				<s:documentation>
+					South Africa				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="ZM">
+			<s:annotation>
+				<s:documentation>
+					Zambia				</s:documentation>
+			</s:annotation>
+		</s:enumeration>		<s:enumeration value="ZW">
+			<s:annotation>
+				<s:documentation>
+					Zimbabwe				</s:documentation>
+			</s:annotation>
+		</s:enumeration>	</s:restriction>
+</s:simpleType>
+
+<s:simpleType name="AccountInformationType">
+	<s:restriction base="s:string">	<s:enumeration value="DeliveryOptions">
+		<s:annotation>
+			<s:documentation>
+				The DeliveryOptions account information type.
+			</s:documentation>
+		</s:annotation>
+	</s:enumeration>	<s:enumeration value="PictureFees">
+		<s:annotation>
+			<s:documentation>
+				The PictureFees account information type.
+			</s:documentation>
+		</s:annotation>
+	</s:enumeration>	<s:enumeration value="BreakBulkFees">
+		<s:annotation>
+			<s:documentation>
+				The BreakBulkFees account information type.
+			</s:documentation>
+		</s:annotation>
+	</s:enumeration>	<s:enumeration value="DirectDispatchFees">
+		<s:annotation>
+			<s:documentation>
+				The DirectDispatchFees account information type.
+			</s:documentation>
+		</s:annotation>
+	</s:enumeration>	<s:enumeration value="MaximumViewableStockLevel">
+		<s:annotation>
+			<s:documentation>
+				The MaximumViewableStockLevel account information type.
+			</s:documentation>
+		</s:annotation>
+	</s:enumeration>	<s:enumeration value="Categories">
+		<s:annotation>
+			<s:documentation>
+				The Categories account information type.
+			</s:documentation>
+		</s:annotation>
+	</s:enumeration>	<s:enumeration value="Brands">
+		<s:annotation>
+			<s:documentation>
+				The Brands account information type.
+			</s:documentation>
+		</s:annotation>
+	</s:enumeration>	<s:enumeration value="ProductTypes">
+		<s:annotation>
+			<s:documentation>
+				The ProductTypes account information type.
+			</s:documentation>
+		</s:annotation>
+	</s:enumeration>	<s:enumeration value="Genders">
+		<s:annotation>
+			<s:documentation>
+				The Genders account information type.
+			</s:documentation>
+		</s:annotation>
+	</s:enumeration>	</s:restriction>
+</s:simpleType>		<s:complexType name="AbstractRequestType" abstract="true"><s:sequence>
+		<s:element name="TestMode" type="s:boolean" default="true"></s:element>
+	</s:sequence>
+</s:complexType>
+
+<s:element name="GetStockFileRequest" type="tns:GetStockFileRequestType" />
+<s:complexType name="GetStockFileRequestType"><s:complexContent>
+		<s:extension base="tns:AbstractRequestType">
+			<s:sequence>
+				<s:element name="StockFileFormat" type="tns:FileFormat">
+					<s:annotation>
+						<s:documentation>
+							The format the stock file should be returned in.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="FieldDelimiter" type="tns:StringLength1" minOccurs="0" default=",">
+					<s:annotation>
+						<s:documentation>
+							The delimeter to use for the delimited file format.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="StockFileFields" type="tns:ArrayOfStockFileField" minOccurs="0">
+					<s:annotation>
+						<s:documentation>
+							The stock file columns that should be returned in the stock file. If none are specified the default columns shown in a stock file for the customer are included.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="SortBy" type="tns:StockFileSort" minOccurs="1"></s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="AddOrderItemRequest" type="tns:AddOrderItemRequestType" />
+<s:complexType name="AddOrderItemRequestType">
+	<s:annotation>
+		<s:documentation>
+			The add order item request.
+		</s:documentation>
+	</s:annotation>
+	<s:complexContent>
+		<s:extension base="tns:AbstractRequestType">
+			<s:sequence>
+				<s:element name="OrderReference" type="s:int" minOccurs="0">
+					<s:annotation>
+						<s:documentation>
+							The order reference returned by CreateOrder of the order this item should be added to.
+							One of OrderReference and YourOrderReference is required, if both are supplied they must be for the same order.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="YourOrderReference" type="s:string" minOccurs="0">
+					<s:annotation>
+						<s:documentation>
+							The customers reference for the order this item should be added to.
+							One of OrderReference and YourOrderReference is required, if both are supplied they must be for the same order.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="StockCode" type="s:string">
+					<s:annotation>
+						<s:documentation>
+							The Beauty Fort stock code for the item.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="Quantity" type="s:int">
+					<s:annotation>
+						<s:documentation>
+							The quantity of the item to be ordered.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="CancelOrderRequest" type="tns:CancelOrderRequestType" />
+<s:complexType name="CancelOrderRequestType"><s:complexContent>
+		<s:extension base="tns:AbstractRequestType">
+			<s:sequence>
+				<s:element name="OrderReference" type="s:int" minOccurs="0">
+					<s:annotation>
+						<s:documentation>
+							The order reference returned by CreateOrder of the order to be cancelled.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="YourOrderReference" type="s:string" minOccurs="0">
+					<s:annotation>
+						<s:documentation>
+							The customers reference for the order to be cancelled.
+							One of OrderReference and YourOrderReference is required, if both are supplied they must be for the same order.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="CreateOrderRequest" type="tns:CreateOrderRequestType" />
+<s:complexType name="CreateOrderRequestType">
+	<s:annotation>
+		<s:documentation>
+			The create order request.
+		</s:documentation>
+	</s:annotation>
+	<s:complexContent>
+		<s:extension base="tns:AbstractRequestType">
+			<s:sequence>
+				<s:element name="Type" type="tns:OrderType">
+					<s:annotation>
+						<s:documentation>
+							The order type.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="YourOrderReference" type="s:string" minOccurs="0">
+					<s:annotation>
+						<s:documentation>
+							The customers order reference number.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="EditOrderItemRequest" type="tns:EditOrderItemRequestType" />
+<s:complexType name="EditOrderItemRequestType">
+	<s:annotation>
+		<s:documentation>
+			The edit order item request.
+		</s:documentation>
+	</s:annotation>
+	<s:complexContent>
+		<s:extension base="tns:AbstractRequestType">
+			<s:sequence>
+				<s:element name="OrderReference" type="s:int" minOccurs="0">
+					<s:annotation>
+						<s:documentation>
+							The order reference returned by CreateOrder of the order the item being edited is in.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="YourOrderReference" type="s:string" minOccurs="0">
+					<s:annotation>
+						<s:documentation>
+							The customers reference for the order the item being edited is in.
+							One of OrderReference and YourOrderReference is required, if both are supplied they must be for the same order.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="ItemReference" type="s:int">
+					<s:annotation>
+						<s:documentation>
+							The item reference returned by AddOrderItem of the item being edited.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="Quantity" type="s:int">
+					<s:annotation>
+						<s:documentation>
+							The quantity of the sku to be ordered.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="GetAccountStatementRequest" type="tns:GetAccountStatementRequestType" />
+<s:complexType name="GetAccountStatementRequestType"><s:complexContent>
+		<s:extension base="tns:AbstractRequestType">
+			<s:sequence>
+				<s:element name="DateRange" type="tns:DateRange"></s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="GetFreeDirectDispatchCancellationsLeftRequest" type="tns:GetFreeDirectDispatchCancellationsLeftRequestType" />
+<s:complexType name="GetFreeDirectDispatchCancellationsLeftRequestType"><s:complexContent>
+		<s:extension base="tns:AbstractRequestType">
+			<s:sequence>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="GetOrderDetailRequest" type="tns:GetOrderDetailRequestType" />
+<s:complexType name="GetOrderDetailRequestType">
+	<s:annotation>
+		<s:documentation>
+			The get order detail request.
+		</s:documentation>
+	</s:annotation>
+	<s:complexContent>
+		<s:extension base="tns:AbstractRequestType">
+			<s:sequence>
+				<s:element name="OrderReference" type="s:int" minOccurs="0">
+					<s:annotation>
+						<s:documentation>
+							The order reference for which details are being requested.
+							One of OrderReference and YourOrderReference is required, if both are supplied they must be for the same order.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="YourOrderReference" type="s:string" minOccurs="0">
+					<s:annotation>
+						<s:documentation>
+							The customers order reference for which details are being requested.
+							One of OrderReference and YourOrderReference is required, if both are supplied they must be for the same order.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="IncludeOrderItems" type="s:boolean">
+					<s:annotation>
+						<s:documentation>
+							Specifies if details of the items in the order should be included in the response or not.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="GetOrdersRequest" type="tns:GetOrdersRequestType" />
+<s:complexType name="GetOrdersRequestType">
+	<s:annotation>
+		<s:documentation>
+			The get orders request.
+		</s:documentation>
+	</s:annotation>
+	<s:complexContent>
+		<s:extension base="tns:AbstractRequestType">
+			<s:sequence>
+				<s:element name="DateRange" type="tns:DateRange"></s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="ProductSearchRequest" type="tns:ProductSearchRequestType" />
+<s:complexType name="ProductSearchRequestType"><s:complexContent>
+		<s:extension base="tns:AbstractRequestType">
+			<s:sequence>
+				<s:element name="StockCodes" type="tns:ArrayOfStockCode" minOccurs="0"></s:element>
+				<s:element name="Categories" type="tns:ArrayOfCategory" minOccurs="0"></s:element>
+				<s:element name="Brands" type="tns:ArrayOfBrand" minOccurs="0"></s:element>
+				<s:element name="ProductTypes" type="tns:ArrayOfProductType" minOccurs="0"></s:element>
+				<s:element name="Genders" type="tns:ArrayOfGender" minOccurs="0"></s:element>
+				<s:element name="PriceRange" type="tns:PriceRange" minOccurs="0"></s:element>
+				<s:element name="MinimumAvailableStock" type="s:int" minOccurs="0" default="1"></s:element>
+				<s:element name="SearchTerm" type="s:string" minOccurs="0"></s:element>
+				<s:element name="Page" type="s:int" default="1"></s:element>
+				<s:element name="ResultsPerPage" type="s:int" default="50"></s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="RemoveOrderItemRequest" type="tns:RemoveOrderItemRequestType" />
+<s:complexType name="RemoveOrderItemRequestType">
+	<s:annotation>
+		<s:documentation>
+			The remove order item request.
+		</s:documentation>
+	</s:annotation>
+	<s:complexContent>
+		<s:extension base="tns:AbstractRequestType">
+			<s:sequence>
+				<s:element name="OrderReference" type="s:int" minOccurs="0">
+					<s:annotation>
+						<s:documentation>
+							The order reference returned by CreateOrder of the order this item should be removed from.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="YourOrderReference" type="s:string" minOccurs="0">
+					<s:annotation>
+						<s:documentation>
+							The customers reference for the order this item should be removed from.
+							One of OrderReference and YourOrderReference is required, if both are supplied they must be for the same order.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="ItemReference" type="s:int">
+					<s:annotation>
+						<s:documentation>
+							The item reference returned by AddOrderItem of the item being removed.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="GetAccountInformationRequest" type="tns:GetAccountInformationRequestType" />
+<s:complexType name="GetAccountInformationRequestType"><s:complexContent>
+		<s:extension base="tns:AbstractRequestType">
+			<s:sequence>
+				<s:element name="AccountInformationTypes" type="tns:ArrayOfAccountInformationType" minOccurs="0"></s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="PlaceOrderRequest" type="tns:PlaceOrderRequestType" />
+<s:complexType name="PlaceOrderRequestType"><s:complexContent>
+		<s:extension base="tns:AbstractRequestType">
+			<s:sequence>
+				<s:element name="OrderReference" type="s:int" minOccurs="0"></s:element>
+				<s:element name="YourOrderReference" type="s:string" minOccurs="0"></s:element>
+				<s:element name="AttemptAutomaticPayment" type="s:boolean"></s:element>
+				<s:element name="EnforceQuantityChanges" type="s:boolean" default="false" minOccurs="0"></s:element>
+				<s:element name="InvoiceFirstName" type="s:string">
+					<s:annotation>
+						<s:documentation>
+							The invoice first name for the order.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="InvoiceLastName" type="s:string">
+					<s:annotation>
+						<s:documentation>
+							The invoice last name for the order.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="InvoiceAddress" type="tns:Address">
+					<s:annotation>
+						<s:documentation>
+							The invoice address for the order.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="DeliveryFirstName" type="s:string">
+					<s:annotation>
+						<s:documentation>
+							The delivery first name for the order.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="DeliveryLastName" type="s:string">
+					<s:annotation>
+						<s:documentation>
+							The delivery last name for the order.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="DeliveryAddress" type="tns:Address">
+					<s:annotation>
+						<s:documentation>
+							The delivery address for the order.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="DeliveryOption" type="tns:DeliveryOption"></s:element>
+				<s:element name="PromoCode" type="s:string" minOccurs="0"></s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="GetHighResImageRequest" type="tns:GetHighResImageRequestType" />
+<s:complexType name="GetHighResImageRequestType"><s:complexContent>
+		<s:extension base="tns:AbstractRequestType">
+			<s:sequence>
+				<s:element name="StockCode" type="s:string"></s:element>
+				<s:element name="PurchaseIfNoAccess" type="s:boolean" default="false" minOccurs="0">
+					<s:annotation>
+						<s:documentation>
+							When set to true access to the picture is automatically purchased if the picture is not currently accessible.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+			</s:sequence>		
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="AddBreakBulkOrderItemRequest" type="tns:AddBreakBulkOrderItemRequestType" />
+<s:complexType name="AddBreakBulkOrderItemRequestType">
+	<s:annotation>
+		<s:documentation>
+			The add break bulk order item request.
+		</s:documentation>
+	</s:annotation>
+	<s:complexContent>
+		<s:extension base="tns:AbstractRequestType">
+			<s:sequence>
+				<s:element name="OrderReference" type="s:int" minOccurs="0">
+					<s:annotation>
+						<s:documentation>
+							The order reference returned by CreateOrder of the order this item should be added to.
+							One of OrderReference and YourOrderReference is required, if both are supplied they must be for the same order.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="YourOrderReference" type="s:string" minOccurs="0">
+					<s:annotation>
+						<s:documentation>
+							The customers reference for the order this item should be added to.
+							One of OrderReference and YourOrderReference is required, if both are supplied they must be for the same order.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="Items" type="tns:ArrayOfBreakBulkItem" minOccurs="1"></s:element>
+				<s:element name="References" type="tns:ArrayOfBreakBulkReference" minOccurs="1"></s:element>
+				<s:element name="Quantity" type="s:int">
+					<s:annotation>
+						<s:documentation>
+							The quantity of the break bulk item to be ordered.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="RemoveBreakBulkOrderItemRequest" type="tns:RemoveBreakBulkOrderItemRequestType" />
+<s:complexType name="RemoveBreakBulkOrderItemRequestType">
+	<s:annotation>
+		<s:documentation>
+			The remove break bulk order item request.
+		</s:documentation>
+	</s:annotation>
+	<s:complexContent>
+		<s:extension base="tns:AbstractRequestType">
+			<s:sequence>
+				<s:element name="OrderReference" type="s:int" minOccurs="0">
+					<s:annotation>
+						<s:documentation>
+							The order reference returned by CreateOrder of the order this break bulk item should be removed from.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="YourOrderReference" type="s:string" minOccurs="0">
+					<s:annotation>
+						<s:documentation>
+							The customers reference for the order this break bulk item should be removed from.
+							One of OrderReference and YourOrderReference is required, if both are supplied they must be for the same order.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="BreakBulkItemReference" type="s:int">
+					<s:annotation>
+						<s:documentation>
+							The break bulk item reference returned by AddBreakBulkOrderItem of the break bulk item being removed.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>		<s:complexType name="AbstractResponseType" abstract="true">
+	<s:sequence>
+		<s:element name="TestMode" type="s:boolean"></s:element>
+		<s:element name="Errors" type="tns:ArrayOfError" minOccurs="0"></s:element>
+		<s:element name="Warnings" type="tns:ArrayOfWarning" minOccurs="0"></s:element>
+	</s:sequence>
+</s:complexType>
+
+<s:element name="GetStockFileResponse" type="tns:GetStockFileResponseType" />
+<s:complexType name="GetStockFileResponseType">
+	<s:complexContent>
+		<s:extension base="tns:AbstractResponseType">
+			<s:sequence>
+				<s:element name="StockFileFormat" type="tns:FileFormat">
+					<s:annotation>
+						<s:documentation>
+							The format of the requrned stock file, this value will always match the StockFileFormat value of the request.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="FieldDelimiter" type="tns:StringLength1" minOccurs="0"></s:element>
+				<s:element name="File" type="s:base64Binary">
+					<s:annotation>
+						<s:documentation>
+							The base64 encoded file.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="AddOrderItemResponse" type="tns:AddOrderItemResponseType" />
+<s:complexType name="AddOrderItemResponseType">
+	<s:complexContent>
+		<s:extension base="tns:AbstractResponseType">
+			<s:sequence>
+				<s:element name="OrderItem" type="tns:OrderItem">
+					<s:annotation>
+						<s:documentation>
+							Details of the item added.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="CancelOrderResponse" type="tns:CancelOrderResponseType" />
+<s:complexType name="CancelOrderResponseType">
+	<s:complexContent>
+		<s:extension base="tns:AbstractResponseType">
+			<s:sequence>
+				<s:element name="Success" type="s:boolean"></s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="CreateOrderResponse" type="tns:CreateOrderResponseType" />
+<s:complexType name="CreateOrderResponseType">
+	<s:complexContent>
+		<s:extension base="tns:AbstractResponseType">
+			<s:sequence>
+				<s:element name="OrderReference" type="s:int">
+					<s:annotation>
+						<s:documentation>
+							A reference number for the created order.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="YourOrderReference" type="s:string" minOccurs="0">
+					<s:annotation>
+						<s:documentation>
+							The customers reference number for the created order.
+							This matches the value set in the CreateOrder request.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="EditOrderItemResponse" type="tns:EditOrderItemResponseType" />
+<s:complexType name="EditOrderItemResponseType">
+	<s:complexContent>
+		<s:extension base="tns:AbstractResponseType">
+			<s:sequence>
+				<s:element name="OrderItem" type="tns:OrderItem">
+					<s:annotation>
+						<s:documentation>
+							Details of the item updated.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="GetAccountStatementResponse" type="tns:GetAccountStatementResponseType" />
+<s:complexType name="GetAccountStatementResponseType">
+	<s:complexContent>
+		<s:extension base="tns:AbstractResponseType">
+			<s:sequence>
+				<s:element name="DateRange" type="tns:DateRange"></s:element>
+				<s:element name="BalanceBroughtForward" type="tns:Amount"></s:element>
+				<s:element name="Transactions" type="tns:ArrayOfTransaction"></s:element>
+				<s:element name="FinalBalance" type="tns:Amount"></s:element>
+				<s:element name="CurrentAvailableCredit" type="tns:Amount">
+					<s:annotation>
+						<s:documentation>
+							NOTE: This is the current available credit, not the available credit for the report date range.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="CurrentBalance" type="tns:Amount">
+					<s:annotation>
+						<s:documentation>
+							NOTE: This is the current balance, not the balance for the report date range.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+				<s:element name="CurrentOverdue" type="tns:Amount" minOccurs="0">
+					<s:annotation>
+						<s:documentation>
+							NOTE: This is the current overdue amount, not the overdue amount for the report date range.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="GetFreeDirectDispatchCancellationsLeftResponse" type="tns:GetFreeDirectDispatchCancellationsLeftResponseType" />
+<s:complexType name="GetFreeDirectDispatchCancellationsLeftResponseType">
+	<s:complexContent>
+		<s:extension base="tns:AbstractResponseType">
+			<s:sequence>
+				<s:element name="FreeDirectDispatchCancellationsLeft" type="s:int"></s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="GetOrderDetailResponse" type="tns:GetOrderDetailResponseType" />
+<s:complexType name="GetOrderDetailResponseType">
+	<s:complexContent>
+		<s:extension base="tns:AbstractResponseType">
+			<s:sequence>
+				<s:element name="Order" type="tns:OrderDetail">
+					<s:annotation>
+						<s:documentation>
+							Details of the order.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="GetOrdersResponse" type="tns:GetOrdersResponseType" />
+<s:complexType name="GetOrdersResponseType">
+	<s:complexContent>
+		<s:extension base="tns:AbstractResponseType">
+			<s:sequence>
+				<s:element name="OrderOverviews" type="tns:ArrayOfOrderOverview">
+					<s:annotation>
+						<s:documentation>
+							The overviews of orders created between the specified start and end dates.
+						</s:documentation>
+					</s:annotation>
+				</s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="ProductSearchResponse" type="tns:ProductSearchResponseType" />
+<s:complexType name="ProductSearchResponseType">
+	<s:complexContent>
+		<s:extension base="tns:AbstractResponseType">
+			<s:sequence>
+				<s:element name="Page" type="s:int"></s:element>
+				<s:element name="ResultsPerPage" type="s:int"></s:element>
+				<s:element name="TotalResults" type="s:int"></s:element>
+				<s:element name="Items" type="tns:ArrayOfItem"></s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="RemoveOrderItemResponse" type="tns:RemoveOrderItemResponseType" />
+<s:complexType name="RemoveOrderItemResponseType">
+	<s:complexContent>
+		<s:extension base="tns:AbstractResponseType">
+			<s:sequence>
+				<s:element name="Success" type="s:boolean"></s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="GetAccountInformationResponse" type="tns:GetAccountInformationResponseType" />
+<s:complexType name="GetAccountInformationResponseType">
+	<s:complexContent>
+		<s:extension base="tns:AbstractResponseType">
+			<s:sequence>
+				<s:element name="WholesaleDeliveryOptions" type="tns:ArrayOfWholesaleDeliveryOption" minOccurs="0"></s:element>
+				<s:element name="DirectDispatchDeliveryOptions" type="tns:ArrayOfDirectDispatchDeliveryOption" minOccurs="0"></s:element>
+				<s:element name="PictureFees" type="tns:PictureFees" minOccurs="0"></s:element>
+				<s:element name="BreakBulkFees" type="tns:BreakBulkFees" minOccurs="0"></s:element>
+				<s:element name="DirectDispatchFees" type="tns:DirectDispatchFees" minOccurs="0"></s:element>
+				<s:element name="MaximumViewableStockLevel" type="s:int" minOccurs="0"></s:element>
+				<s:element name="Categories" type="tns:ArrayOfCategory" minOccurs="0"></s:element>
+				<s:element name="Brands" type="tns:ArrayOfBrand" minOccurs="0"></s:element>
+				<s:element name="ProductTypes" type="tns:ArrayOfProductType" minOccurs="0"></s:element>
+				<s:element name="Genders" type="tns:ArrayOfGender" minOccurs="0"></s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="PlaceOrderResponse" type="tns:PlaceOrderResponseType" />
+<s:complexType name="PlaceOrderResponseType">
+	<s:complexContent>
+		<s:extension base="tns:AbstractResponseType">
+			<s:sequence>
+				<s:element name="Success" type="s:boolean"></s:element>
+				<s:element name="Order" type="tns:OrderDetail" minOccurs="0"></s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="GetHighResImageResponse" type="tns:GetHighResImageResponseType" />
+<s:complexType name="GetHighResImageResponseType">
+	<s:complexContent>
+		<s:extension base="tns:AbstractResponseType">
+			<s:sequence>
+				<s:element name="Image" type="s:base64Binary"></s:element>
+				<s:element name="Purchased" type="s:boolean" default="false"></s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="AddBreakBulkOrderItemResponse" type="tns:AddBreakBulkOrderItemResponseType" />
+<s:complexType name="AddBreakBulkOrderItemResponseType">
+	<s:complexContent>
+		<s:extension base="tns:AbstractResponseType">
+			<s:sequence>
+				<s:element name="BreakBulkOrderItem" type="tns:BreakBulkOrderItem"></s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>
+
+<s:element name="RemoveBreakBulkOrderItemResponse" type="tns:RemoveBreakBulkOrderItemResponseType" />
+<s:complexType name="RemoveBreakBulkOrderItemResponseType">
+	<s:complexContent>
+		<s:extension base="tns:AbstractResponseType">
+			<s:sequence>
+				<s:element name="Success" type="s:boolean"></s:element>
+			</s:sequence>
+		</s:extension>
+	</s:complexContent>
+</s:complexType>	</s:schema>
+</wsdl:types>	<wsdl:message name="AuthHeader">
+	<wsdl:part name="AuthHeader" element="tns:AuthHeader" />
+</wsdl:message><wsdl:message name="AddBreakBulkOrderItemRequest">
+	<wsdl:part name="AddBreakBulkOrderItemRequest" element="tns:AddBreakBulkOrderItemRequest" />
+</wsdl:message>
+<wsdl:message name="AddBreakBulkOrderItemResponse">
+	<wsdl:part name="AddBreakBulkOrderItemResponse" element="tns:AddBreakBulkOrderItemResponse" />
+</wsdl:message><wsdl:message name="AddOrderItemRequest">
+	<wsdl:part name="AddOrderItemRequest" element="tns:AddOrderItemRequest" />
+</wsdl:message>
+<wsdl:message name="AddOrderItemResponse">
+	<wsdl:part name="AddOrderItemResponse" element="tns:AddOrderItemResponse" />
+</wsdl:message><wsdl:message name="CancelOrderRequest">
+	<wsdl:part name="CancelOrderRequest" element="tns:CancelOrderRequest" />
+</wsdl:message>
+<wsdl:message name="CancelOrderResponse">
+	<wsdl:part name="CancelOrderResponse" element="tns:CancelOrderResponse" />
+</wsdl:message><wsdl:message name="CreateOrderRequest">
+	<wsdl:part name="CreateOrderRequest" element="tns:CreateOrderRequest" />
+</wsdl:message>
+<wsdl:message name="CreateOrderResponse">
+	<wsdl:part name="CreateOrderResponse" element="tns:CreateOrderResponse" />
+</wsdl:message><wsdl:message name="EditOrderItemRequest">
+	<wsdl:part name="EditOrderItemRequest" element="tns:EditOrderItemRequest" />
+</wsdl:message>
+<wsdl:message name="EditOrderItemResponse">
+	<wsdl:part name="EditOrderItemResponse" element="tns:EditOrderItemResponse" />
+</wsdl:message><wsdl:message name="GetAccountInformationRequest">
+	<wsdl:part name="GetAccountInformationRequest" element="tns:GetAccountInformationRequest" />
+</wsdl:message>
+<wsdl:message name="GetAccountInformationResponse">
+	<wsdl:part name="GetAccountInformationResponse" element="tns:GetAccountInformationResponse" />
+</wsdl:message><wsdl:message name="GetAccountStatementRequest">
+	<wsdl:part name="GetAccountStatementRequest" element="tns:GetAccountStatementRequest" />
+</wsdl:message>
+<wsdl:message name="GetAccountStatementResponse">
+	<wsdl:part name="GetAccountStatementResponse" element="tns:GetAccountStatementResponse" />
+</wsdl:message><wsdl:message name="GetFreeDirectDispatchCancellationsLeftRequest">
+	<wsdl:part name="GetFreeDirectDispatchCancellationsLeftRequest" element="tns:GetFreeDirectDispatchCancellationsLeftRequest" />
+</wsdl:message>
+<wsdl:message name="GetFreeDirectDispatchCancellationsLeftResponse">
+	<wsdl:part name="GetFreeDirectDispatchCancellationsLeftResponse" element="tns:GetFreeDirectDispatchCancellationsLeftResponse" />
+</wsdl:message><wsdl:message name="GetHighResImageRequest">
+	<wsdl:part name="GetHighResImageRequest" element="tns:GetHighResImageRequest" />
+</wsdl:message>
+<wsdl:message name="GetHighResImageResponse">
+	<wsdl:part name="GetHighResImageResponse" element="tns:GetHighResImageResponse" />
+</wsdl:message><wsdl:message name="GetOrderDetailRequest">
+	<wsdl:part name="GetOrderDetailRequest" element="tns:GetOrderDetailRequest" />
+</wsdl:message>
+<wsdl:message name="GetOrderDetailResponse">
+	<wsdl:part name="GetOrderDetailResponse" element="tns:GetOrderDetailResponse" />
+</wsdl:message><wsdl:message name="GetOrdersRequest">
+	<wsdl:part name="GetOrdersRequest" element="tns:GetOrdersRequest" />
+</wsdl:message>
+<wsdl:message name="GetOrdersResponse">
+	<wsdl:part name="GetOrdersResponse" element="tns:GetOrdersResponse" />
+</wsdl:message><wsdl:message name="GetStockFileRequest">
+	<wsdl:part name="GetStockFileRequest" element="tns:GetStockFileRequest" />
+</wsdl:message>
+<wsdl:message name="GetStockFileResponse">
+	<wsdl:part name="GetStockFileResponse" element="tns:GetStockFileResponse" />
+</wsdl:message><wsdl:message name="PlaceOrderRequest">
+	<wsdl:part name="PlaceOrderRequest" element="tns:PlaceOrderRequest" />
+</wsdl:message>
+<wsdl:message name="PlaceOrderResponse">
+	<wsdl:part name="PlaceOrderResponse" element="tns:PlaceOrderResponse" />
+</wsdl:message><wsdl:message name="ProductSearchRequest">
+	<wsdl:part name="ProductSearchRequest" element="tns:ProductSearchRequest" />
+</wsdl:message>
+<wsdl:message name="ProductSearchResponse">
+	<wsdl:part name="ProductSearchResponse" element="tns:ProductSearchResponse" />
+</wsdl:message><wsdl:message name="RemoveBreakBulkOrderItemRequest">
+	<wsdl:part name="RemoveBreakBulkOrderItemRequest" element="tns:RemoveBreakBulkOrderItemRequest" />
+</wsdl:message>
+<wsdl:message name="RemoveBreakBulkOrderItemResponse">
+	<wsdl:part name="RemoveBreakBulkOrderItemResponse" element="tns:RemoveBreakBulkOrderItemResponse" />
+</wsdl:message><wsdl:message name="RemoveOrderItemRequest">
+	<wsdl:part name="RemoveOrderItemRequest" element="tns:RemoveOrderItemRequest" />
+</wsdl:message>
+<wsdl:message name="RemoveOrderItemResponse">
+	<wsdl:part name="RemoveOrderItemResponse" element="tns:RemoveOrderItemResponse" />
+</wsdl:message>	<wsdl:portType name="BeautyFortSoap"><wsdl:operation name="AddBreakBulkOrderItem">
+		<wsdl:input message="tns:AddBreakBulkOrderItemRequest" />
+		<wsdl:output message="tns:AddBreakBulkOrderItemResponse" />
+	</wsdl:operation><wsdl:operation name="AddOrderItem">
+		<wsdl:input message="tns:AddOrderItemRequest" />
+		<wsdl:output message="tns:AddOrderItemResponse" />
+	</wsdl:operation><wsdl:operation name="CancelOrder">
+		<wsdl:input message="tns:CancelOrderRequest" />
+		<wsdl:output message="tns:CancelOrderResponse" />
+	</wsdl:operation><wsdl:operation name="CreateOrder">
+		<wsdl:input message="tns:CreateOrderRequest" />
+		<wsdl:output message="tns:CreateOrderResponse" />
+	</wsdl:operation><wsdl:operation name="EditOrderItem">
+		<wsdl:input message="tns:EditOrderItemRequest" />
+		<wsdl:output message="tns:EditOrderItemResponse" />
+	</wsdl:operation><wsdl:operation name="GetAccountInformation">
+		<wsdl:input message="tns:GetAccountInformationRequest" />
+		<wsdl:output message="tns:GetAccountInformationResponse" />
+	</wsdl:operation><wsdl:operation name="GetAccountStatement">
+		<wsdl:input message="tns:GetAccountStatementRequest" />
+		<wsdl:output message="tns:GetAccountStatementResponse" />
+	</wsdl:operation><wsdl:operation name="GetFreeDirectDispatchCancellationsLeft">
+		<wsdl:input message="tns:GetFreeDirectDispatchCancellationsLeftRequest" />
+		<wsdl:output message="tns:GetFreeDirectDispatchCancellationsLeftResponse" />
+	</wsdl:operation><wsdl:operation name="GetHighResImage">
+		<wsdl:input message="tns:GetHighResImageRequest" />
+		<wsdl:output message="tns:GetHighResImageResponse" />
+	</wsdl:operation><wsdl:operation name="GetOrderDetail">
+		<wsdl:input message="tns:GetOrderDetailRequest" />
+		<wsdl:output message="tns:GetOrderDetailResponse" />
+	</wsdl:operation><wsdl:operation name="GetOrders">
+		<wsdl:input message="tns:GetOrdersRequest" />
+		<wsdl:output message="tns:GetOrdersResponse" />
+	</wsdl:operation><wsdl:operation name="GetStockFile">
+		<wsdl:input message="tns:GetStockFileRequest" />
+		<wsdl:output message="tns:GetStockFileResponse" />
+	</wsdl:operation><wsdl:operation name="PlaceOrder">
+		<wsdl:input message="tns:PlaceOrderRequest" />
+		<wsdl:output message="tns:PlaceOrderResponse" />
+	</wsdl:operation><wsdl:operation name="ProductSearch">
+		<wsdl:input message="tns:ProductSearchRequest" />
+		<wsdl:output message="tns:ProductSearchResponse" />
+	</wsdl:operation><wsdl:operation name="RemoveBreakBulkOrderItem">
+		<wsdl:input message="tns:RemoveBreakBulkOrderItemRequest" />
+		<wsdl:output message="tns:RemoveBreakBulkOrderItemResponse" />
+	</wsdl:operation><wsdl:operation name="RemoveOrderItem">
+		<wsdl:input message="tns:RemoveOrderItemRequest" />
+		<wsdl:output message="tns:RemoveOrderItemResponse" />
+	</wsdl:operation></wsdl:portType>	<wsdl:binding name="BeautyFortSoap" type="tns:BeautyFortSoap">
+	<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" /><wsdl:operation name="AddBreakBulkOrderItem">
+		<soap:operation soapAction="" />
+		<wsdl:input>
+			<soap:header use="literal" message="tns:AuthHeader" part="AuthHeader" />
+			<soap:body use="literal" />
+		</wsdl:input>
+		<wsdl:output>
+			<soap:body use="literal" />
+		</wsdl:output>
+	</wsdl:operation><wsdl:operation name="AddOrderItem">
+		<soap:operation soapAction="" />
+		<wsdl:input>
+			<soap:header use="literal" message="tns:AuthHeader" part="AuthHeader" />
+			<soap:body use="literal" />
+		</wsdl:input>
+		<wsdl:output>
+			<soap:body use="literal" />
+		</wsdl:output>
+	</wsdl:operation><wsdl:operation name="CancelOrder">
+		<soap:operation soapAction="" />
+		<wsdl:input>
+			<soap:header use="literal" message="tns:AuthHeader" part="AuthHeader" />
+			<soap:body use="literal" />
+		</wsdl:input>
+		<wsdl:output>
+			<soap:body use="literal" />
+		</wsdl:output>
+	</wsdl:operation><wsdl:operation name="CreateOrder">
+		<soap:operation soapAction="" />
+		<wsdl:input>
+			<soap:header use="literal" message="tns:AuthHeader" part="AuthHeader" />
+			<soap:body use="literal" />
+		</wsdl:input>
+		<wsdl:output>
+			<soap:body use="literal" />
+		</wsdl:output>
+	</wsdl:operation><wsdl:operation name="EditOrderItem">
+		<soap:operation soapAction="" />
+		<wsdl:input>
+			<soap:header use="literal" message="tns:AuthHeader" part="AuthHeader" />
+			<soap:body use="literal" />
+		</wsdl:input>
+		<wsdl:output>
+			<soap:body use="literal" />
+		</wsdl:output>
+	</wsdl:operation><wsdl:operation name="GetAccountInformation">
+		<soap:operation soapAction="" />
+		<wsdl:input>
+			<soap:header use="literal" message="tns:AuthHeader" part="AuthHeader" />
+			<soap:body use="literal" />
+		</wsdl:input>
+		<wsdl:output>
+			<soap:body use="literal" />
+		</wsdl:output>
+	</wsdl:operation><wsdl:operation name="GetAccountStatement">
+		<soap:operation soapAction="" />
+		<wsdl:input>
+			<soap:header use="literal" message="tns:AuthHeader" part="AuthHeader" />
+			<soap:body use="literal" />
+		</wsdl:input>
+		<wsdl:output>
+			<soap:body use="literal" />
+		</wsdl:output>
+	</wsdl:operation><wsdl:operation name="GetFreeDirectDispatchCancellationsLeft">
+		<soap:operation soapAction="" />
+		<wsdl:input>
+			<soap:header use="literal" message="tns:AuthHeader" part="AuthHeader" />
+			<soap:body use="literal" />
+		</wsdl:input>
+		<wsdl:output>
+			<soap:body use="literal" />
+		</wsdl:output>
+	</wsdl:operation><wsdl:operation name="GetHighResImage">
+		<soap:operation soapAction="" />
+		<wsdl:input>
+			<soap:header use="literal" message="tns:AuthHeader" part="AuthHeader" />
+			<soap:body use="literal" />
+		</wsdl:input>
+		<wsdl:output>
+			<soap:body use="literal" />
+		</wsdl:output>
+	</wsdl:operation><wsdl:operation name="GetOrderDetail">
+		<soap:operation soapAction="" />
+		<wsdl:input>
+			<soap:header use="literal" message="tns:AuthHeader" part="AuthHeader" />
+			<soap:body use="literal" />
+		</wsdl:input>
+		<wsdl:output>
+			<soap:body use="literal" />
+		</wsdl:output>
+	</wsdl:operation><wsdl:operation name="GetOrders">
+		<soap:operation soapAction="" />
+		<wsdl:input>
+			<soap:header use="literal" message="tns:AuthHeader" part="AuthHeader" />
+			<soap:body use="literal" />
+		</wsdl:input>
+		<wsdl:output>
+			<soap:body use="literal" />
+		</wsdl:output>
+	</wsdl:operation><wsdl:operation name="GetStockFile">
+		<soap:operation soapAction="" />
+		<wsdl:input>
+			<soap:header use="literal" message="tns:AuthHeader" part="AuthHeader" />
+			<soap:body use="literal" />
+		</wsdl:input>
+		<wsdl:output>
+			<soap:body use="literal" />
+		</wsdl:output>
+	</wsdl:operation><wsdl:operation name="PlaceOrder">
+		<soap:operation soapAction="" />
+		<wsdl:input>
+			<soap:header use="literal" message="tns:AuthHeader" part="AuthHeader" />
+			<soap:body use="literal" />
+		</wsdl:input>
+		<wsdl:output>
+			<soap:body use="literal" />
+		</wsdl:output>
+	</wsdl:operation><wsdl:operation name="ProductSearch">
+		<soap:operation soapAction="" />
+		<wsdl:input>
+			<soap:header use="literal" message="tns:AuthHeader" part="AuthHeader" />
+			<soap:body use="literal" />
+		</wsdl:input>
+		<wsdl:output>
+			<soap:body use="literal" />
+		</wsdl:output>
+	</wsdl:operation><wsdl:operation name="RemoveBreakBulkOrderItem">
+		<soap:operation soapAction="" />
+		<wsdl:input>
+			<soap:header use="literal" message="tns:AuthHeader" part="AuthHeader" />
+			<soap:body use="literal" />
+		</wsdl:input>
+		<wsdl:output>
+			<soap:body use="literal" />
+		</wsdl:output>
+	</wsdl:operation><wsdl:operation name="RemoveOrderItem">
+		<soap:operation soapAction="" />
+		<wsdl:input>
+			<soap:header use="literal" message="tns:AuthHeader" part="AuthHeader" />
+			<soap:body use="literal" />
+		</wsdl:input>
+		<wsdl:output>
+			<soap:body use="literal" />
+		</wsdl:output>
+	</wsdl:operation></wsdl:binding>	<wsdl:service name="BeautyFort">
+	<wsdl:documentation>
+		<version>
+			1
+		</version>
+	</wsdl:documentation>
+	<wsdl:port name="BeautyFortSoap" binding="tns:BeautyFortSoap">
+		<soap:address location="http://www.beautyfort.com/api/soap/v2" />
+	</wsdl:port>
+</wsdl:service></wsdl:definitions>
