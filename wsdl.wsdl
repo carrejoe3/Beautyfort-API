@@ -17,7 +17,7 @@
 		</s:documentation>
 	</s:annotation>
 	<s:sequence>
-		<s:element name="Username" type="s:string"></s:element>
+		<s:element name="Username" type="s:string">joe</s:element>
 		<s:element name="Nonce" type="s:string"></s:element>
 		<s:element name="Created" type="s:dateTime"></s:element>
 		<s:element name="Password" type="s:string"></s:element>

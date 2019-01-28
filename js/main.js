@@ -1,51 +1,47 @@
-var xmlhttp = new XMLHttpRequest();
-
 $(document).ready(function() {
-    openRequest();
 });
 
-function sendRequest(request) {
-    xmlhttp.setRequestHeader('Content-Type', 'text/xml');
-    xmlhttp.send(request);
-};
+function sendRequest() {
+    $.soap({
+        enableLogging: true,
+        data: xml.join('')
 
-function openRequest() {
-    xmlhttp.open('POST', 'http://www.beautyfort.com/api/soap', true);
-    xmlhttp.onreadystatechange = function () {
-        if (xmlhttp.readyState == 4) {
-            if (xmlhttp.status == 200) {
-                alert('done. use firebug/console to see network response');
-            }
-        }
-    }
-};
-
-function buildRequest() {
-    var request =
-        '<?xml version="1.0" encoding="utf-8"?>\
-        <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:bf="http://www.beautyfort.com/api/">\
-            <soap:Header>\
-                <bf:AuthHeader> AuthHeader\
-                <bf:Username>Joe</bf:Username>\
-                <bf:Nonce> string </bf:Nonce>\
-                <bf:Created> dateTime </bf:Created>\
-                <bf:Password>ArbwT1ckBz2ymoEW46ZO5H8alg3uDCUGhXtjseVKxNfM</bf:Password>\
-            </soap:Header>\
-            <soap:Body>\
-                <bf:GetStockFileRequest> GetStockFileRequestType\
-                    <bf:TestMode> boolean </bf:TestMode>\
-                    <bf:StockFileFormat> StockFileFormat (string) </bf:StockFileFormat>\
-                    <bf:FieldDelimiter> StringLength1 (string) </bf:FieldDelimiter>\
-                    <bf:StockFileFields> ArrayOfStockFileField\
-                    <bf:StockFileField> StockFileField (string) </bf:StockFileField>\
-                    </bf:StockFileFields>\
-                    <bf:SortBy> StockFileSort (string) </bf:SortBy>\
-                </bf:GetStockFileRequest>\
-            </soap:Body>\
-        </soap:Envelope>';
-        return request;
+        // success: function (soapResponse) {
+        //     // do stuff with soapResponse
+        //     // if you want to have the response as JSON use soapResponse.toJSON();
+        //     // or soapResponse.toString() to get XML string
+        //     // or soapResponse.toXML() to get XML DOM
+        // },
+        // error: function (SOAPResponse) {
+        //     console.log(SOAPResponse);
+        // }
+    });
 };
 
 $('.btn').click(function() {
-    sendRequest(buildRequest());
+    sendRequest();
+    console.log(new Date().toLocaleString());
 });
+
+var xml = [
+'<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://www.beautyfort.com/api/">',
+'<soapenv:Header>',
+   '<api:AuthHeader>',
+      '<api:Username>joe</api:Username>',
+      '<api:Nonce>2</api:Nonce>',
+      '<api:Created>2019-01-28T21:16:00.000Z</api:Created>',
+      '<api:Password>ArbwT1ckBz2ymoEW46ZO5H8alg3uDCUGhXtjseVKxNfM</api:Password>',
+   '</api:AuthHeader>',
+'</soapenv:Header>',
+'<soapenv:Body>',
+   '<api:GetStockFileRequest>',
+      '<api:TestMode>true</api:TestMode>',
+      '<api:StockFileFormat>JSON</api:StockFileFormat>',
+      '<api:FieldDelimiter>,</api:FieldDelimiter>',
+      '<api:StockFileFields>',
+         '<api:StockFileField>?</api:StockFileField><api:StockFileField>StockCode</api:StockFileField><api:StockFileField>Category</api:StockFileField><api:StockFileField>Brand</api:StockFileField><api:StockFileField>StockLevel</api:StockFileField>',
+      '</api:StockFileFields>',
+      '<api:SortBy>StockLevel</api:SortBy>',
+   '</api:GetStockFileRequest>',
+'</soapenv:Body>',
+'</soapenv:Envelope>'];
