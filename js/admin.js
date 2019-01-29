@@ -1,9 +1,9 @@
 /**
- * Feedier plugin Saving process
+ * Beautyfort plugin Saving process
  */
 jQuery( document ).ready( function () {
  
-    jQuery( document ).on( 'submit', '#feedier-admin-form', function ( e ) {
+    jQuery( document ).on( 'submit', '#beautyfort-admin-form', function ( e ) {
  
         e.preventDefault();
  

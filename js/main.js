@@ -18,11 +18,6 @@ function sendRequest() {
     });
 };
 
-$('.btn').click(function() {
-    sendRequest();
-    console.log(new Date().toLocaleString());
-});
-
 var xml = [
 '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://www.beautyfort.com/api/">',
 '<soapenv:Header>',
@@ -45,3 +40,17 @@ var xml = [
    '</api:GetStockFileRequest>',
 '</soapenv:Body>',
 '</soapenv:Envelope>'];
+
+//Password generator
+$('.generatePassword').click(function() {
+   var now = new Date();
+   var dateTime = [now.getFullYear(), AddZero(now.getMonth() + 1), AddZero(now.getDate())].join("-") + 'T' + [AddZero(now.getHours()), AddZero(now.getMinutes()), AddZero(now.getSeconds())].join(":") + '.000Z';
+   // what dateTime should look like
+   // 2015-07-08T11:31:53+01:00
+   $(".console").val(dateTime);
+});
+
+//Pad given value to the left with "0"
+function AddZero(num) {
+   return (num >= 0 && num < 10) ? "0" + num : num + "";
+}
