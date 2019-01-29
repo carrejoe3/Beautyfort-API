@@ -301,7 +301,7 @@ class BeautyFort
         
         foreach ($_POST as $field=>$value) {
     
-            if (substr($field, 0, 8) !== "feedier_" || empty($value))
+        if (substr($field, 0, 8) !== "feedier_" || empty($value))
         continue;
     
         // We remove the feedier_ prefix to clean things up
@@ -316,6 +316,16 @@ class BeautyFort
         echo __('Saved!', 'feedier');
         die();
     
+    }
+
+    /**
+     * 
+     * Make a SOAP call using SoapClient class
+     * 
+     */
+    public function createSoapRequest()
+    {
+        $client = new SoapClient("http://www.beautyfort.com/api/wsdl/v2/wsdl.wsdl");
     }
 }
 /*
