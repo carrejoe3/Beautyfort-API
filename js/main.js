@@ -1,82 +1,484 @@
-$(document).ready(function() {});
+$(document).ready(function () { });
 
 function sendRequest() {
-   $.soap({
-      enableLogging: true,
-      data: xml.join("")
+    $.soap({
+        enableLogging: true,
+        data: xml.join("")
 
-      // success: function (soapResponse) {
-      //     // do stuff with soapResponse
-      //     // if you want to have the response as JSON use soapResponse.toJSON();
-      //     // or soapResponse.toString() to get XML string
-      //     // or soapResponse.toXML() to get XML DOM
-      // },
-      // error: function (SOAPResponse) {
-      //     console.log(SOAPResponse);
-      // }
-   });
+        // success: function (soapResponse) {
+        //     // do stuff with soapResponse
+        //     // if you want to have the response as JSON use soapResponse.toJSON();
+        //     // or soapResponse.toString() to get XML string
+        //     // or soapResponse.toXML() to get XML DOM
+        // },
+        // error: function (SOAPResponse) {
+        //     console.log(SOAPResponse);
+        // }
+    });
 }
 
 var xml = [
-   '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://www.beautyfort.com/api/">',
-   "<soapenv:Header>",
-   "<api:AuthHeader>",
-   "<api:Username>joe</api:Username>",
-   "<api:Nonce>2</api:Nonce>",
-   "<api:Created>2019-01-28T21:16:00.000Z</api:Created>",
-   "<api:Password>ArbwT1ckBz2ymoEW46ZO5H8alg3uDCUGhXtjseVKxNfM</api:Password>",
-   "</api:AuthHeader>",
-   "</soapenv:Header>",
-   "<soapenv:Body>",
-   "<api:GetStockFileRequest>",
-   "<api:TestMode>true</api:TestMode>",
-   "<api:StockFileFormat>JSON</api:StockFileFormat>",
-   "<api:FieldDelimiter>,</api:FieldDelimiter>",
-   "<api:StockFileFields>",
-   "<api:StockFileField>?</api:StockFileField><api:StockFileField>StockCode</api:StockFileField><api:StockFileField>Category</api:StockFileField><api:StockFileField>Brand</api:StockFileField><api:StockFileField>StockLevel</api:StockFileField>",
-   "</api:StockFileFields>",
-   "<api:SortBy>StockLevel</api:SortBy>",
-   "</api:GetStockFileRequest>",
-   "</soapenv:Body>",
-   "</soapenv:Envelope>"
+    '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://www.beautyfort.com/api/">',
+    "<soapenv:Header>",
+    "<api:AuthHeader>",
+    "<api:Username>joe</api:Username>",
+    "<api:Nonce>2</api:Nonce>",
+    "<api:Created>2019-01-28T21:16:00.000Z</api:Created>",
+    "<api:Password>ArbwT1ckBz2ymoEW46ZO5H8alg3uDCUGhXtjseVKxNfM</api:Password>",
+    "</api:AuthHeader>",
+    "</soapenv:Header>",
+    "<soapenv:Body>",
+    "<api:GetStockFileRequest>",
+    "<api:TestMode>true</api:TestMode>",
+    "<api:StockFileFormat>JSON</api:StockFileFormat>",
+    "<api:FieldDelimiter>,</api:FieldDelimiter>",
+    "<api:StockFileFields>",
+    "<api:StockFileField>?</api:StockFileField><api:StockFileField>StockCode</api:StockFileField><api:StockFileField>Category</api:StockFileField><api:StockFileField>Brand</api:StockFileField><api:StockFileField>StockLevel</api:StockFileField>",
+    "</api:StockFileFields>",
+    "<api:SortBy>StockLevel</api:SortBy>",
+    "</api:GetStockFileRequest>",
+    "</soapenv:Body>",
+    "</soapenv:Envelope>"
 ];
 
 //Password generator
-$(".generatePassword").click(function() {
-   // example nonce
-   var nonce = '186269';
+$(".generatePassword").click(function () {
+    // example nonce
+    // var nonce = '186269';
 
-   // example dateTime
-   var dateTime = "2015-07-08T11:31:53+01:00";
+    // example dateTime
+    // var dateTime = "2015-07-08T11:31:53+01:00";
 
-   // example password
-   var password = "Ok4IWYLBHbKn8juM1gFPvQxadieZmS2"
+    // example password
+    // var password = "Ok4IWYLBHbKn8juM1gFPvQxadieZmS2"
 
-   // Password should be formatted as
-   // base64 encoded(sha1(Nonce . Created . Secret))
+    // Password should be formatted as
+    // base64 encoded(sha1(Nonce . Created . Secret))
 
-// var nonce = makeNonce();
-   var now = new Date();
-// var dateTime = [now.getFullYear(), AddZero(now.getMonth() + 1), AddZero(now.getDate())].join("-") + "T" + [AddZero(now.getHours()), AddZero(now.getMinutes()), AddZero(now.getSeconds())].join(":") + ".000Z";
-// var password = "jcRZVsWP2XdDt5iJIM0mS64hCr3f"
+    var nonce = makeNonce();
+    var now = new Date();
+    var dateTime = [now.getFullYear(), AddZero(now.getMonth() + 1), AddZero(now.getDate())].join("-") + "T" + [AddZero(now.getHours()), AddZero(now.getMinutes()), AddZero(now.getSeconds())].join(":") + ".000Z";
+    var password = "jcRZVsWP2XdDt5iJIM0mS64hCr3f"
 
-   $(".console").val('password: ' + btoa(Sha1(nonce.toString() + ' . ' + dateTime.toString() + ' . ' + password)) + '\n\n' + 'password should be: ZDg3MTZiZTgwYTMwYWY4Nzc4OGFjMmZhYjA5YzM3MTdlYmQ1M2ZkMw==' + '\n\n' + 'dateTime: ' + dateTime + '\n\n' + 'nonce: ' + nonce + '\n\n' + 'secret: ' + password);
+    // sha1 encoding
+    var encrypted = SHA1(nonce.toString() + dateTime.toString() + password);
+
+    // print to console
+    $(".console").val('password: ' + btoa(encrypted) + '\n\n' + 'password should be: ZDg3MTZiZTgwYTMwYWY4Nzc4OGFjMmZhYjA5YzM3MTdlYmQ1M2ZkMw==' + '\n\n' + 'dateTime: ' + dateTime + '\n\n' + 'nonce: ' + nonce + '\n\n' + 'secret: ' + password);
 });
 
 //Pad given value to the left with "0"
 function AddZero(num) {
-   return num >= 0 && num < 10 ? "0" + num : num + "";
+    return num >= 0 && num < 10 ? "0" + num : num + "";
 }
 
 // Generate nonce string
 function makeNonce() {
-   var text = "";
-   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-   for (var i = 0; i < 10; i++) {
-      text += possible.charAt(Math.floor(Math.random() * possible.length));
-   }
+    for (var i = 0; i < 10; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
 
-   return text;
+    return text;
 }
 
+
+/**
+*
+*  Secure Hash Algorithm (SHA1)
+*  http://www.webtoolkit.info/
+*
+**/
+
+function SHA1(msg) {
+
+    function rotate_left(n, s) {
+
+
+        var t4 = (n << s) | (n >>> (32 - s));
+
+
+        return t4;
+
+
+    };
+
+    function lsb_hex(val) {
+
+
+        var str = "";
+
+
+        var i;
+
+
+        var vh;
+
+
+        var vl;
+
+
+
+
+        for (i = 0; i <= 6; i += 2) {
+
+
+            vh = (val >>> (i * 4 + 4)) & 0x0f;
+
+
+            vl = (val >>> (i * 4)) & 0x0f;
+
+
+            str += vh.toString(16) + vl.toString(16);
+
+
+        }
+
+
+        return str;
+
+
+    };
+
+    function cvt_hex(val) {
+
+
+        var str = "";
+
+
+        var i;
+
+
+        var v;
+
+
+
+
+        for (i = 7; i >= 0; i--) {
+
+
+            v = (val >>> (i * 4)) & 0x0f;
+
+
+            str += v.toString(16);
+
+
+        }
+
+
+        return str;
+
+
+    };
+
+    function Utf8Encode(string) {
+
+
+        string = string.replace(/\r\n/g, "\n");
+
+
+        var utftext = "";
+
+
+
+
+        for (var n = 0; n < string.length; n++) {
+
+
+
+
+            var c = string.charCodeAt(n);
+
+
+
+
+            if (c < 128) {
+
+
+                utftext += String.fromCharCode(c);
+
+
+            }
+
+
+            else if ((c > 127) && (c < 2048)) {
+
+
+                utftext += String.fromCharCode((c >> 6) | 192);
+
+
+                utftext += String.fromCharCode((c & 63) | 128);
+
+
+            }
+
+
+            else {
+
+
+                utftext += String.fromCharCode((c >> 12) | 224);
+
+
+                utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+
+
+                utftext += String.fromCharCode((c & 63) | 128);
+
+
+            }
+
+
+
+
+        }
+
+
+
+
+        return utftext;
+
+
+    };
+
+    var blockstart;
+    var i, j;
+    var W = new Array(80);
+    var H0 = 0x67452301;
+    var H1 = 0xEFCDAB89;
+    var H2 = 0x98BADCFE;
+    var H3 = 0x10325476;
+    var H4 = 0xC3D2E1F0;
+    var A, B, C, D, E;
+    var temp;
+
+    msg = Utf8Encode(msg);
+
+    var msg_len = msg.length;
+    var word_array = new Array();
+
+    for (i = 0; i < msg_len - 3; i += 4) {
+
+
+        j = msg.charCodeAt(i) << 24 | msg.charCodeAt(i + 1) << 16 |
+
+
+            msg.charCodeAt(i + 2) << 8 | msg.charCodeAt(i + 3);
+
+
+        word_array.push(j);
+
+
+    }
+
+    switch (msg_len % 4) {
+
+
+        case 0:
+
+
+            i = 0x080000000;
+
+
+            break;
+
+
+        case 1:
+
+
+            i = msg.charCodeAt(msg_len - 1) << 24 | 0x0800000;
+
+
+            break;
+
+
+
+
+        case 2:
+
+
+            i = msg.charCodeAt(msg_len - 2) << 24 | msg.charCodeAt(msg_len - 1) << 16 | 0x08000;
+
+
+            break;
+
+
+
+
+        case 3:
+
+
+            i = msg.charCodeAt(msg_len - 3) << 24 | msg.charCodeAt(msg_len - 2) << 16 | msg.charCodeAt(msg_len - 1) << 8 | 0x80;
+
+
+            break;
+
+
+    }
+
+    word_array.push(i);
+
+    while ((word_array.length % 16) != 14) word_array.push(0);
+
+    word_array.push(msg_len >>> 29);
+
+    word_array.push((msg_len << 3) & 0x0ffffffff);
+
+    for (blockstart = 0; blockstart < word_array.length; blockstart += 16) {
+
+
+
+
+        for (i = 0; i < 16; i++) W[i] = word_array[blockstart + i];
+
+
+        for (i = 16; i <= 79; i++) W[i] = rotate_left(W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16], 1);
+
+
+
+
+        A = H0;
+
+
+        B = H1;
+
+
+        C = H2;
+
+
+        D = H3;
+
+
+        E = H4;
+
+
+
+
+        for (i = 0; i <= 19; i++) {
+
+
+            temp = (rotate_left(A, 5) + ((B & C) | (~B & D)) + E + W[i] + 0x5A827999) & 0x0ffffffff;
+
+
+            E = D;
+
+
+            D = C;
+
+
+            C = rotate_left(B, 30);
+
+
+            B = A;
+
+
+            A = temp;
+
+
+        }
+
+
+
+
+        for (i = 20; i <= 39; i++) {
+
+
+            temp = (rotate_left(A, 5) + (B ^ C ^ D) + E + W[i] + 0x6ED9EBA1) & 0x0ffffffff;
+
+
+            E = D;
+
+
+            D = C;
+
+
+            C = rotate_left(B, 30);
+
+
+            B = A;
+
+
+            A = temp;
+
+
+        }
+
+
+
+
+        for (i = 40; i <= 59; i++) {
+
+
+            temp = (rotate_left(A, 5) + ((B & C) | (B & D) | (C & D)) + E + W[i] + 0x8F1BBCDC) & 0x0ffffffff;
+
+
+            E = D;
+
+
+            D = C;
+
+
+            C = rotate_left(B, 30);
+
+
+            B = A;
+
+
+            A = temp;
+
+
+        }
+
+
+
+
+        for (i = 60; i <= 79; i++) {
+
+
+            temp = (rotate_left(A, 5) + (B ^ C ^ D) + E + W[i] + 0xCA62C1D6) & 0x0ffffffff;
+
+
+            E = D;
+
+
+            D = C;
+
+
+            C = rotate_left(B, 30);
+
+
+            B = A;
+
+
+            A = temp;
+
+
+        }
+
+
+
+
+        H0 = (H0 + A) & 0x0ffffffff;
+
+
+        H1 = (H1 + B) & 0x0ffffffff;
+
+
+        H2 = (H2 + C) & 0x0ffffffff;
+
+
+        H3 = (H3 + D) & 0x0ffffffff;
+
+
+        H4 = (H4 + E) & 0x0ffffffff;
+
+
+
+
+    }
+
+    var temp = cvt_hex(H0) + cvt_hex(H1) + cvt_hex(H2) + cvt_hex(H3) + cvt_hex(H4);
+
+    return temp.toLowerCase();
+}
