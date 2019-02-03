@@ -44,23 +44,23 @@ var xml = [
 //Password generator
 $(".generatePassword").click(function() {
    // example nonce
-   // var nonce = '186269';
+   var nonce = '186269';
 
    // example dateTime
-   // var dateTime = "2015-07-08T11:31:53+01:00";
+   var dateTime = "2015-07-08T11:31:53+01:00";
 
    // example password
-   // var password = "Ok4IWYLBHbKn8juM1gFPvQxadieZmS2"
+   var password = "Ok4IWYLBHbKn8juM1gFPvQxadieZmS2"
 
    // Password should be formatted as
    // base64 encoded(sha1(Nonce . Created . Secret))
 
-   var nonce = makeNonce();
+// var nonce = makeNonce();
    var now = new Date();
-   var dateTime = [now.getFullYear(), AddZero(now.getMonth() + 1), AddZero(now.getDate())].join("-") + "T" + [AddZero(now.getHours()), AddZero(now.getMinutes()), AddZero(now.getSeconds())].join(":") + ".000Z";
-   var password = "jcRZVsWP2XdDt5iJIM0mS64hCr3f"
+// var dateTime = [now.getFullYear(), AddZero(now.getMonth() + 1), AddZero(now.getDate())].join("-") + "T" + [AddZero(now.getHours()), AddZero(now.getMinutes()), AddZero(now.getSeconds())].join(":") + ".000Z";
+// var password = "jcRZVsWP2XdDt5iJIM0mS64hCr3f"
 
-   $(".console").val('password: ' + encode("(sha1(" + nonce.toString() + "." + dateTime.toString() + "." + password + "))") + '\n\n' + 'dateTime: ' + dateTime + '\n\n' + 'nonce: ' + nonce);
+   $(".console").val('password: ' + btoa(Sha1(nonce.toString() + ' . ' + dateTime.toString() + ' . ' + password)) + '\n\n' + 'password should be: ZDg3MTZiZTgwYTMwYWY4Nzc4OGFjMmZhYjA5YzM3MTdlYmQ1M2ZkMw==' + '\n\n' + 'dateTime: ' + dateTime + '\n\n' + 'nonce: ' + nonce + '\n\n' + 'secret: ' + password);
 });
 
 //Pad given value to the left with "0"
