@@ -8,7 +8,6 @@
  * License:           GPL-2.0+
  * GitHub Plugin URI: https://github.com/carrejoe3/Beautyfort-API
  */
- 
 /*
  * Plugin constants
  */
@@ -16,7 +15,7 @@ if(!defined('BeautyFort_URL'))
 	define('BeautyFort_URL', plugin_dir_url( __FILE__ ));
 if(!defined('BeautyFort_PATH'))
 	define('BeautyFort_PATH', plugin_dir_path( __FILE__ ));
- 
+
 /*
  * Main class
  */
@@ -45,8 +44,8 @@ class BeautyFort
      *
      * @var string
      */
-    private $option_name = 'feedier_data';
-    
+    private $option_name = 'beautyfort_data';
+
     /**
      * Returns the saved options data as an array
      *
@@ -78,17 +77,13 @@ class BeautyFort
      */
     public function adminLayout()
     {
-    
+
         $data = $this->getData();
-    
+
         ?>
-    
+
         <div class="wrap">
-            <h3><?php _e('BeautyFort API Settings', 'beautyfort'); ?></h3>
-    
-            <p>
-                <?php _e('You can get your Feedier API settings from your <b>Integrations</b> page.', 'beautyfort'); ?>
-            </p>
+            <h3><?php _e('BeautyFort stock request', 'beautyfort'); ?></h3>
 
             <hr>
 
@@ -97,47 +92,59 @@ class BeautyFort
                     <tbody>
                         <tr>
                             <td scope="row">
-                                <label><?php _e( 'Public key', 'beautyfort' ); ?></label>
+                                <label><?php _e( 'Username', 'beautyfort' ); ?></label>
                             </td>
                             <td>
-                                <input name="feedier_public_key" id="feedier_public_key" class="regular-text" value="<?php echo (isset($data['public_key'])) ? $data['public_key'] : ''; ?>"/>
+                                <input name="beautyfort_username" id="beautyfort_username" class="regular-text" value="<?php echo (isset($data['beautyfort_username'])) ? $data['beautyfort_usernamez'] : ''; ?>"/>
                             </td>
                         </tr>
                         <tr>
                             <td scope="row">
-                                <label><?php _e( 'Private key', 'beautyfort' ); ?></label>
+                                <label><?php _e( 'Secret', 'beautyfort' ); ?></label>
                             </td>
                             <td>
-                                <input name="feedier_private_key" id="feedier_private_key" class="regular-text" value="<?php echo (isset($data['private_key'])) ? $data['private_key'] : ''; ?>"/>
+                                <input name="beautyfort_secret" id="beautyfort_secret" class="regular-text" value="<?php echo (isset($data['beautyfort_secret'])) ? $data['beautyfort_secret'] : ''; ?>"/>
                             </td>
                         </tr>
                         <tr>
-                            <td>
-                                <hr>
-                                <h4><?php _e( 'Widget options', 'feedier' ); ?></h4>
+                            <td scope="row">
+                                <label><?php _e( 'Created', 'beautyfort' ); ?></label>
                             </td>
-                        </tr>    
+                            <td>
+                                <input name="beautyfort_created" id="beautyfort_created" class="regular-text" value="<?php echo (isset($data['beautyfort_created'])) ? $data['beautyfort_created'] : ''; ?>"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td scope="row">
+                                <label><?php _e( 'Nonce', 'beautyfort' ); ?></label>
+                            </td>
+                            <td>
+                                <input name="beautyfort_nonce" id="beautyfort_nonce" class="regular-text" value="<?php echo (isset($data['beautyfort_nonce'])) ? $data['beautyfort_nonce'] : ''; ?>"/>
+                            </td>
+                        </tr>
                         <tr>
                             <td colspan="2">
-                                <button class="button button-primary" id="feedier-admin-save" type="submit"><?php _e( 'Save', 'feedier' ); ?></button>
+                                <button class="button button-primary" id="beautyfort-admin-save" type="submit"><?php _e( 'Save', 'beautyfort' ); ?></button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </form>
         </div>
-    
+
         <?php
-    
+
+        var_dump($data);
+
     }
 
-    /** 
-     * The security nonce 
+    /**
+     * The security nonce
      *
-     * @var string 
+     * @var string
      */
     private $_nonce = 'beautyfort_admin';
-    
+
     /**
      * Adds Admin Scripts for the Ajax call
      */
@@ -145,8 +152,8 @@ class BeautyFort
     {
         wp_enqueue_script('beautyfort-admin', BeautyFort_URL. '/assets/js/admin.js', array(), 1.0);
         $admin_options = array(
-        'ajax_url' => admin_url( 'admin-ajax.php' ),
-        '_nonce'   => wp_create_nonce( $this->_nonce ),
+            'ajax_url' => admin_url( 'admin-ajax.php' ),
+            '_nonce'   => wp_create_nonce( $this->_nonce ),
         );
         wp_localize_script('beautyfort-admin', 'beautyfort_exchanger', $admin_options);
     }
@@ -160,29 +167,29 @@ class BeautyFort
      */
     public function storeAdminData()
     {
-    
+
         if (wp_verify_nonce($_POST['security'], $this->_nonce ) === false)
         die('Invalid Request!');
-    
+
         $data = $this->getData();
-        
+
         foreach ($_POST as $field=>$value) {
-    
-        if (substr($field, 0, 8) !== "feedier_" || empty($value))
+
+        if (substr($field, 0, 8) !== "beautyfort_" || empty($value))
         continue;
-    
-        // We remove the feedier_ prefix to clean things up
+
+        // We remove the beautyfort_ prefix to clean things up
         $field = substr($field, 8);
-    
+
             $data[$field] = $value;
-    
+
         }
-    
+
         update_option($this->option_name, $data);
-    
-        echo __('Saved!', 'feedier');
+
+        echo __('Saved!', 'beautyfort');
         die();
-    
+
     }
 }
 /*
@@ -191,11 +198,16 @@ class BeautyFort
 new BeautyFort();
 
 // Initialize webservice
-$request = new SoapClient('http://www.beautyfort.com/api/wsdl/v2/wsdl.wsdl');
 
-//Use the functions of the client, the params of the function are in 
-//the associative array
-$params = array('CountryName' => 'Spain', 'CityName' => 'Alicante');
-$response = $soapclient->getWeather($params);
+// $options = array(
+//     'Username' => $username,
+//     'Nonce' => $nonce,
+//     'Created' => $dateTime,
+//     'Password' => $password,
+//     'TestMode' => true,
+//     'StockFileFormat' => 'JSON',
+// );
 
-var_dump($response);
+// $client = new SoapClient('http://www.beautyfort.com/api/wsdl/v2/wsdl.wsdl', $options);
+
+// var_dump($response);
