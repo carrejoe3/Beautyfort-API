@@ -11,6 +11,7 @@
 /*
  * Plugin constants
  */
+
 if(!defined('BeautyFort_URL'))
 	define('BeautyFort_URL', plugin_dir_url( __FILE__ ));
 if(!defined('BeautyFort_PATH'))
@@ -27,6 +28,55 @@ if(!defined('BeautyFort_PATH'))
 class BeautyFort
 {
     /**
+     * The security nonce
+     *
+     * @var string
+     */
+    private $_nonce = 'beautyfort_admin';
+
+    /**
+     * The option name
+     *
+     * @var string
+     */
+    private $option_name = 'beautyfort_data';
+
+    /**
+     * Beautyfort api username
+     *
+     * @var string
+     */
+    private $soapUsername = 'joetest';
+
+    /**
+     * Beautyfort api secret
+     *
+     * @var string
+     */
+    private $soapSecret = 'jcRZVsWP2XdDt5iJIM0mS64hCr3f';
+
+    /**
+     * Beautyfort api datetime
+     *
+     * @var string
+     */
+    private $soapDateTime = '';
+
+    /**
+     * Beautyfort api nonce
+     *
+     * @var string
+     */
+    private $soapNonce = '';
+
+    /**
+     * Beautyfort api password
+     *
+     * @var string
+     */
+    private $soapPassword = '';
+
+    /**
      * BeautyFort constructor.
      *
      * The main plugin actions registered for WordPress
@@ -38,13 +88,6 @@ class BeautyFort
 	    add_action( 'wp_ajax_store_admin_data', array( $this, 'storeAdminData' ));
 	    add_action( 'admin_enqueue_scripts', array( $this, 'addAdminScripts' ) );
     }
-
-    /**
-     * The option name
-     *
-     * @var string
-     */
-    private $option_name = 'beautyfort_data';
 
     /**
      * Returns the saved options data as an array
@@ -95,7 +138,7 @@ class BeautyFort
                                 <label><?php _e( 'Username', 'beautyfort' ); ?></label>
                             </td>
                             <td>
-                                <input name="beautyfort_username" id="beautyfort_username" class="regular-text" value="<?php echo (isset($data['beautyfort_username'])) ? $data['beautyfort_usernamez'] : ''; ?>"/>
+                                <input name="beautyfort_beautyfortUser" id="beautyfort_beautyfortUser" class="regular-text" value="<?php echo (isset($data['beautyfort_beautyfortUser'])) ? $data['beautyfort_beautyfortUser'] : ''; ?>"/>
                             </td>
                         </tr>
                         <tr>
@@ -134,23 +177,14 @@ class BeautyFort
 
         <?php
 
-        var_dump($data);
-
     }
-
-    /**
-     * The security nonce
-     *
-     * @var string
-     */
-    private $_nonce = 'beautyfort_admin';
 
     /**
      * Adds Admin Scripts for the Ajax call
      */
     public function addAdminScripts()
     {
-        wp_enqueue_script('beautyfort-admin', BeautyFort_URL. '/assets/js/admin.js', array(), 1.0);
+        wp_enqueue_script('beautyfort-admin', BeautyFort_URL. 'assets/js/admin.js', array(), 1.0);
         $admin_options = array(
             'ajax_url' => admin_url( 'admin-ajax.php' ),
             '_nonce'   => wp_create_nonce( $this->_nonce ),
@@ -169,27 +203,34 @@ class BeautyFort
     {
 
         if (wp_verify_nonce($_POST['security'], $this->_nonce ) === false)
-        die('Invalid Request!');
+            die('Invalid Request! Reload your page please.');
 
         $data = $this->getData();
 
         foreach ($_POST as $field=>$value) {
 
-        if (substr($field, 0, 8) !== "beautyfort_" || empty($value))
-        continue;
+            if (substr($field, 0, 11) !== "beautyfort_" || empty($value))
+                continue;
 
-        // We remove the beautyfort_ prefix to clean things up
-        $field = substr($field, 8);
+            if (empty($value))
+                unset($data[$field]);
 
-            $data[$field] = $value;
+            // We remove the beautyfort_ prefix to clean things up
+            $field = substr($field, 11);
 
+            $data[$field] = esc_attr__($value);
         }
+
+        $soapUsername = $_POST['beautyfort_beautyfortUser'];
+        $soapSecret = $_POST['beautyfort_secret'];
+        $soapDateTime = $_POST['beautyfort_created'];
+        $soapNonce = $_POST['beautyfort_nonce'];
+        $soapPassword = $_POST['beautyfort_password'];
 
         update_option($this->option_name, $data);
 
         echo __('Saved!', 'beautyfort');
         die();
-
     }
 }
 /*
@@ -198,16 +239,17 @@ class BeautyFort
 new BeautyFort();
 
 // Initialize webservice
-
-// $options = array(
-//     'Username' => $username,
-//     'Nonce' => $nonce,
-//     'Created' => $dateTime,
-//     'Password' => $password,
-//     'TestMode' => true,
-//     'StockFileFormat' => 'JSON',
-// );
-
 // $client = new SoapClient('http://www.beautyfort.com/api/wsdl/v2/wsdl.wsdl', $options);
 
 // var_dump($response);
+
+// useful logging function
+function log_me($message) {
+    if (WP_DEBUG === true) {
+        if (is_array($message) || is_object($message)) {
+            error_log(print_r($message, true));
+        } else {
+            error_log($message);
+        }
+    }
+}
