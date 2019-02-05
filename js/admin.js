@@ -9,6 +9,7 @@ jQuery(document).ready(function () {
     var nonce = makeNonce();
     var username = 'joetest';
     var secret = 'jcRZVsWP2XdDt5iJIM0mS64hCr3f';
+
     // sha1 encoding
     var encrypted = SHA1(nonce.toString() + dateTime.toString() + password);
     var password = btoa(encrypted);

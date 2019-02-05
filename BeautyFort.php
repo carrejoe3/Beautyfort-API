@@ -221,13 +221,9 @@ class BeautyFort
             $data[$field] = esc_attr__($value);
         }
 
-        $soapUsername = $_POST['beautyfort_beautyfortUser'];
-        $soapSecret = $_POST['beautyfort_secret'];
-        $soapDateTime = $_POST['beautyfort_created'];
-        $soapNonce = $_POST['beautyfort_nonce'];
-        $soapPassword = $_POST['beautyfort_password'];
-
         update_option($this->option_name, $data);
+
+        soapRequest($_POST['beautyfort_beautyfortUser'], $_POST['beautyfort_nonce'], $_POST['beautyfort_created'], $_POST['beautyfort_password']);
 
         echo __('Saved!', 'beautyfort');
         die();
@@ -236,12 +232,8 @@ class BeautyFort
 /*
  * Starts our plugin class, easy!
  */
+
 new BeautyFort();
-
-// Initialize webservice
-// $client = new SoapClient('http://www.beautyfort.com/api/wsdl/v2/wsdl.wsdl', $options);
-
-// var_dump($response);
 
 // useful logging function
 function log_me($message) {
@@ -252,4 +244,32 @@ function log_me($message) {
             error_log($message);
         }
     }
+}
+
+function soapRequest($soapUsername, $soapNonce, $soapDateTime, $soapPassword) {
+
+    $wsdl = 'http://www.beautyfort.com/api/wsdl/v2/wsdl.wsdl';
+    $trace = true;
+    $exceptions = false;
+
+    $xml_array['Username'] = $soapUsername;
+    $xml_array['Nonce'] = $soapNonce;
+    $xml_array['Created'] = $soapDateTime;
+    $xml_array['Password'] = $soapPassword;
+    $xml_array['TestMode'] = 'true';
+    $xml_array['StockFileFormat'] = 'JSON';
+    $xml_array['SortBy'] = 'StockCode';
+
+    try {
+        $client = new SoapClient($wsdl, array('trace' => $trace, 'exceptions' => $exceptions));
+        $response = $client->GetStockFileRequest($xml_array);
+    }
+
+    catch (Exception $e) {
+        log_me("Error!");
+        log_me($e -> getMessage());
+        log_me('Last response: '. $client->__getLastResponse());
+    }
+
+    log_me($response);
 }
