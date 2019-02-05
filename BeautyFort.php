@@ -166,6 +166,14 @@ class BeautyFort
                             </td>
                         </tr>
                         <tr>
+                            <td scope="row">
+                                <label><?php _e( 'Password', 'beautyfort' ); ?></label>
+                            </td>
+                            <td>
+                                <input name="beautyfort_password" id="beautyfort_password" class="regular-text" value="<?php echo (isset($data['beautyfort_password'])) ? $data['beautyfort_password'] : ''; ?>"/>
+                            </td>
+                        </tr>
+                        <tr>
                             <td colspan="2">
                                 <button class="button button-primary" id="beautyfort-admin-save" type="submit"><?php _e( 'Save', 'beautyfort' ); ?></button>
                             </td>
@@ -223,7 +231,7 @@ class BeautyFort
 
         update_option($this->option_name, $data);
 
-        soapRequest($_POST['beautyfort_beautyfortUser'], $_POST['beautyfort_nonce'], $_POST['beautyfort_created'], $_POST['beautyfort_password']);
+        // soapRequest($_POST['beautyfort_beautyfortUser'], $_POST['beautyfort_nonce'], $_POST['beautyfort_created'], $_POST['beautyfort_password']);
 
         echo __('Saved!', 'beautyfort');
         die();

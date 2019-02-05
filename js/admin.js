@@ -26,6 +26,9 @@ jQuery(document).ready(function () {
     // Set secret field
     jQuery('#beautyfort_secret').val(secret);
 
+    // Set password field
+    jQuery('#beautyfort_password').val(password);
+
     jQuery(document).on('submit', '#beautyfort-admin-form', function (e) {
 
         e.preventDefault();
