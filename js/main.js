@@ -1,47 +1,85 @@
 $(document).ready(function () { });
 
-function sendRequest() {
-    $.soap({
-        enableLogging: true,
-        data: xml.join("")
+function sendRequest(username, nonce, created, password) {
 
-        // success: function (soapResponse) {
-        //     // do stuff with soapResponse
-        //     // if you want to have the response as JSON use soapResponse.toJSON();
-        //     // or soapResponse.toString() to get XML string
-        //     // or soapResponse.toXML() to get XML DOM
-        // },
-        // error: function (SOAPResponse) {
-        //     console.log(SOAPResponse);
-        // }
-    });
+    var xmlhttp = new XMLHttpRequest();
+
+    //replace second argument with the path to your Secret Server webservices
+    xmlhttp.open('POST', 'http://www.beautyfort.com/api/wsdl/v2/wsdl.wsdl', true);
+
+    //create the SOAP request
+    //replace username, password (and org + domain, if necessary) with the appropriate info
+    var strRequest =
+    '<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://www.beautyfort.com/api/">' +
+        '<SOAP-ENV:Header>' +
+            '<ns1:AuthHeader>' +
+                '<ns1:Username>' + username +'</ns1:Username>' +
+                '<ns1:Nonce>' + nonce + '</ns1:Nonce>' +
+                '<ns1:Created>' + created + '</ns1:Created>' +
+                '<ns1:Password>' + password + '</ns1:Password>' +
+            '</ns1:AuthHeader>' +
+        '</SOAP-ENV:Header>' +
+        '<SOAP-ENV:Body>' +
+            '<ns1:GetStockFileRequest>' +
+                '<ns1:TestMode>true</ns1:TestMode>' +
+                '<ns1:StockFileFormat>JSON</ns1:StockFileFormat>' +
+                '<ns1:SortBy>StockCode</ns1:SortBy>' +
+            '</ns1:GetStockFileRequest>' +
+        '</SOAP-ENV:Body>' +
+    '</SOAP-ENV:Envelope>';
+
+    //specify request headers
+    xmlhttp.setRequestHeader('Content-Type', 'text/xml; charset=utf-8');
+    xmlhttp.setRequestHeader('SOAPAction', '"urn:http://www.beautyfort.com/api/"');
+
+    // $('.responseConsole').val(strRequest);
+
+    //FOR TESTING: display results in an alert box once the response is received
+    xmlhttp.onreadystatechange = function () {
+        if (xmlhttp.readyState == 4) {
+            $('.responseConsole').val(xmlhttp.responseText);
+        }
+    };
+
+    //send the SOAP request
+    xmlhttp.send(strRequest);
 }
 
+// request example
 var xml = [
-    '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://www.beautyfort.com/api/">',
-    "<soapenv:Header>",
-    "<api:AuthHeader>",
-    "<api:Username>joe</api:Username>",
-    "<api:Nonce>2</api:Nonce>",
-    "<api:Created>2019-01-28T21:16:00.000Z</api:Created>",
-    "<api:Password>ArbwT1ckBz2ymoEW46ZO5H8alg3uDCUGhXtjseVKxNfM</api:Password>",
-    "</api:AuthHeader>",
-    "</soapenv:Header>",
-    "<soapenv:Body>",
-    "<api:GetStockFileRequest>",
-    "<api:TestMode>true</api:TestMode>",
-    "<api:StockFileFormat>JSON</api:StockFileFormat>",
-    "<api:FieldDelimiter>,</api:FieldDelimiter>",
-    "<api:StockFileFields>",
-    "<api:StockFileField>?</api:StockFileField><api:StockFileField>StockCode</api:StockFileField><api:StockFileField>Category</api:StockFileField><api:StockFileField>Brand</api:StockFileField><api:StockFileField>StockLevel</api:StockFileField>",
-    "</api:StockFileFields>",
-    "<api:SortBy>StockLevel</api:SortBy>",
-    "</api:GetStockFileRequest>",
-    "</soapenv:Body>",
-    "</soapenv:Envelope>"
+    '<SOAP-ENV:Envelope',
+        'xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"',
+        'xmlns:ns1="http://www.beautyfort.com/api/">',
+        '<SOAP-ENV:Header>',
+            '<ns1:AuthHeader>',
+                '<ns1:Username>joetest</ns1:Username>',
+                '<ns1:Nonce>htflFfIKM4</ns1:Nonce>',
+                '<ns1:Created>2019-02-09T10:13:51.000Z</ns1:Created>',
+                '<ns1:Password>NGFjYTJiNzJmOWY2MzBmY2M2MjJkNjg1MDgyMWRjMzQxOGY1YTNjYQ==</ns1:Password>',
+            '</ns1:AuthHeader>',
+        '</SOAP-ENV:Header>',
+        '<SOAP-ENV:Body>',
+            '<ns1:GetStockFileRequest>',
+                '<ns1:TestMode>true</ns1:TestMode>',
+                '<ns1:StockFileFormat>JSON</ns1:StockFileFormat>',
+                '<ns1:SortBy>StockCode</ns1:SortBy>',
+            '</ns1:GetStockFileRequest>',
+        '</SOAP-ENV:Body>',
+    '</SOAP-ENV:Envelope>'
 ];
 
-//Password generator
+// Send request button handler
+$(".sendRequest").click(function() {
+
+    let username = '';
+    let nonce = '';
+    let created = '';
+    let password = '';
+
+    sendRequest(username, nonce, created, password);
+});
+
+// Password generator
 $(".generatePassword").click(function () {
     // example nonce
     // var nonce = '186269';
@@ -67,7 +105,7 @@ $(".generatePassword").click(function () {
     $(".console").val('password: ' + btoa(encrypted) + '\n\n' + 'password should be: ZDg3MTZiZTgwYTMwYWY4Nzc4OGFjMmZhYjA5YzM3MTdlYmQ1M2ZkMw==' + '\n\n' + 'dateTime: ' + dateTime + '\n\n' + 'nonce: ' + nonce + '\n\n' + 'secret: ' + password);
 });
 
-//Pad given value to the left with "0"
+// Pad given value to the left with "0"
 function AddZero(num) {
     return num >= 0 && num < 10 ? "0" + num : num + "";
 }

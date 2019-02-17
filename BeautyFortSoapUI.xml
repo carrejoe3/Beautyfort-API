@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project id="1b14d1ce-a452-452a-8e3d-98e9b0e126ef" created="2.6.0" activeEnvironment="Default environment" name="Project 1" resourceRoot="" updated="2.6.0 2019-01-14T14:47:06Z" xmlns:con="http://eviware.com/soapui/config">
+<con:soapui-project id="1b14d1ce-a452-452a-8e3d-98e9b0e126ef" created="2.6.0" activeEnvironment="Default environment" name="Project 1" resourceRoot="" updated="2.6.0 2019-01-14T14:47:06Z" encryptionMode="Not encrypted" xmlns:con="http://eviware.com/soapui/config">
   <con:settings/>
   <con:interface xsi:type="con:WsdlInterface" id="5b8ecf1c-8c80-4be4-bee5-ccb00614ed33" wsaVersion="NONE" name="BeautyFortSoap" type="wsdl" bindingName="{http://www.beautyfort.com/api/}BeautyFortSoap" soapVersion="1_1" anonymous="optional" definition="http://www.beautyfort.com/api/wsdl/v2/wsdl.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <con:settings/>
@@ -2814,6 +2814,10 @@
       </api:AddBreakBulkOrderItemRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
         <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.beautyfort.com/api/BeautyFortSoap/AddBreakBulkOrderItemRequest"/>
       </con:call>
     </con:operation>
@@ -2844,6 +2848,10 @@
       </api:AddOrderItemRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
         <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.beautyfort.com/api/BeautyFortSoap/AddOrderItemRequest"/>
       </con:call>
     </con:operation>
@@ -2872,6 +2880,10 @@
       </api:CancelOrderRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
         <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.beautyfort.com/api/BeautyFortSoap/CancelOrderRequest"/>
       </con:call>
     </con:operation>
@@ -2899,6 +2911,10 @@
       </api:CreateOrderRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
         <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.beautyfort.com/api/BeautyFortSoap/CreateOrderRequest"/>
       </con:call>
     </con:operation>
@@ -2929,6 +2945,10 @@
       </api:EditOrderItemRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
         <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.beautyfort.com/api/BeautyFortSoap/EditOrderItemRequest"/>
       </con:call>
     </con:operation>
@@ -2958,6 +2978,10 @@
       </api:GetAccountInformationRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
         <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.beautyfort.com/api/BeautyFortSoap/GetAccountInformationRequest"/>
       </con:call>
     </con:operation>
@@ -2986,6 +3010,10 @@
       </api:GetAccountStatementRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
         <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.beautyfort.com/api/BeautyFortSoap/GetAccountStatementRequest"/>
       </con:call>
     </con:operation>
@@ -3010,6 +3038,10 @@
       </api:GetFreeDirectDispatchCancellationsLeftRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
         <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.beautyfort.com/api/BeautyFortSoap/GetFreeDirectDispatchCancellationsLeftRequest"/>
       </con:call>
     </con:operation>
@@ -3037,6 +3069,10 @@
       </api:GetHighResImageRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
         <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.beautyfort.com/api/BeautyFortSoap/GetHighResImageRequest"/>
       </con:call>
     </con:operation>
@@ -3066,6 +3102,10 @@
       </api:GetOrderDetailRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
         <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.beautyfort.com/api/BeautyFortSoap/GetOrderDetailRequest"/>
       </con:call>
     </con:operation>
@@ -3094,6 +3134,10 @@
       </api:GetOrdersRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
         <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.beautyfort.com/api/BeautyFortSoap/GetOrdersRequest"/>
       </con:call>
     </con:operation>
@@ -3127,6 +3171,10 @@
       </api:GetStockFileRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
         <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.beautyfort.com/api/BeautyFortSoap/GetStockFileRequest"/>
       </con:call>
     </con:operation>
@@ -3203,6 +3251,10 @@
       </api:PlaceOrderRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
         <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.beautyfort.com/api/BeautyFortSoap/PlaceOrderRequest"/>
       </con:call>
     </con:operation>
@@ -3285,6 +3337,10 @@
       </api:ProductSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
         <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.beautyfort.com/api/BeautyFortSoap/ProductSearchRequest"/>
       </con:call>
     </con:operation>
@@ -3314,6 +3370,10 @@
       </api:RemoveBreakBulkOrderItemRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
         <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.beautyfort.com/api/BeautyFortSoap/RemoveBreakBulkOrderItemRequest"/>
       </con:call>
     </con:operation>
@@ -3343,6 +3403,10 @@
       </api:RemoveOrderItemRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
         <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.beautyfort.com/api/BeautyFortSoap/RemoveOrderItemRequest"/>
       </con:call>
     </con:operation>
