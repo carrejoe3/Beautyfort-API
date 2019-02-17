@@ -257,24 +257,39 @@ function log_me($message) {
 function soapRequest($soapUsername, $soapNonce, $soapDateTime, $soapPassword) {
 
     $wsdl = 'http://www.beautyfort.com/api/wsdl/v2/wsdl.wsdl';
-    $trace = true;
-    $exceptions = false;
+    $mode = array (
+        'soap_version'  => 'SOAP_1_1',
+        'keep_alive'    => true,
+        'trace'         => 1,
+        'encoding'      =>'UTF-8',
+        'compression'   => SOAP_COMPRESSION_ACCEPT | SOAP_COMPRESSION_GZIP | SOAP_COMPRESSION_DEFLATE,
+        'exceptions'    => true,
+        'cache_wsdl'    => WSDL_CACHE_NONE,
+        'user_agent' => 'Apache-HttpClient/4.5.2 (Java/1.8.0_181)'
+    );
+
+    $client = new SoapClient($wsdl, $mode);
 
     $auth = array(
         'Username' => $soapUsername,
-        'Nonce' => $soapPassword,
+        'Nonce' => $soapNonce,
         'Created' => $soapDateTime,
         'Password' => $soapPassword,
     );
-    $header = new SoapHeader('api','AuthHeader',$auth,false);
+
+    $header = new SoapHeader('http://www.beautyfort.com/api/', 'AuthHeader', $auth);
+
     $client->__setSoapHeaders($header);
 
-    $xml_array['TestMode'] = 'true';
+    $xml_array['TestMode'] = true;
     $xml_array['StockFileFormat'] = 'JSON';
+    $xml_array['FieldDelimiter'] = ',';
+    $xml_array['StockFileFields'] = array(
+        "StockFileField" => "StockCode",
+    );
     $xml_array['SortBy'] = 'StockCode';
 
     try {
-        $client = new SoapClient($wsdl, array('trace' => $trace, 'exceptions' => $exceptions));
         $response = $client->GetStockFile($xml_array);
     }
 
@@ -282,8 +297,12 @@ function soapRequest($soapUsername, $soapNonce, $soapDateTime, $soapPassword) {
         log_me("Error!");
         log_me($e -> getMessage());
         log_me('Last response: '. $client->__getLastResponse());
+        log_me('Last response headers: '. $client->__getLastResponseHeaders());
     }
 
-    log_me('Last request: '. $client->__getLastRequest());
-    log_me($response);
+    // log_me($client->__getFunctions());
+    // log_me('Last request: '. $client->__getLastRequest());
+    // log_me('Last request headers: '. $client->__getLastRequestHeaders());
+    // log_me('Last response headers: '. $client->__getLastResponseHeaders());
+    // log_me('Last response: '. $client->__getLastResponse());
 }

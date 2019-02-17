@@ -11,7 +11,7 @@ jQuery(document).ready(function () {
     var secret = 'jcRZVsWP2XdDt5iJIM0mS64hCr3f';
 
     // sha1 encoding
-    var encrypted = SHA1(nonce.toString() + dateTime + password);
+    var encrypted = SHA1(nonce.toString() + dateTime.toString() + secret);
     var password = btoa(encrypted);
 
     // Set nonce field
