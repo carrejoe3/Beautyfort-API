@@ -42,41 +42,6 @@ class BeautyFort
     private $option_name = 'beautyfort_data';
 
     /**
-     * Beautyfort api username
-     *
-     * @var string
-     */
-    private $soapUsername = 'joetest';
-
-    /**
-     * Beautyfort api secret
-     *
-     * @var string
-     */
-    private $soapSecret = 'jcRZVsWP2XdDt5iJIM0mS64hCr3f';
-
-    /**
-     * Beautyfort api datetime
-     *
-     * @var string
-     */
-    private $soapDateTime = '';
-
-    /**
-     * Beautyfort api nonce
-     *
-     * @var string
-     */
-    private $soapNonce = '';
-
-    /**
-     * Beautyfort api password
-     *
-     * @var string
-     */
-    private $soapPassword = '';
-
-    /**
      * BeautyFort constructor.
      *
      * The main plugin actions registered for WordPress
@@ -151,31 +116,35 @@ class BeautyFort
                         </tr>
                         <tr>
                             <td scope="row">
-                                <label><?php _e( 'Created', 'beautyfort' ); ?></label>
+                                <label><?php _e( 'Stockcode', 'beautyfort' ); ?></label>
                             </td>
                             <td>
-                                <input name="beautyfort_created" id="beautyfort_created" class="regular-text" value="<?php echo (isset($data['beautyfort_created'])) ? $data['beautyfort_created'] : ''; ?>"/>
+                                <input name="beautyfort_stockcode" id="beautyfort_stockcode" class="regular-text" value="<?php echo (isset($data['beautyfort_stockcode'])) ? $data['beautyfort_stockcode'] : ''; ?>"/>
                             </td>
                         </tr>
                         <tr>
                             <td scope="row">
-                                <label><?php _e( 'Nonce', 'beautyfort' ); ?></label>
+                                <label><?php _e( 'Stock Level', 'beautyfort' ); ?></label>
                             </td>
                             <td>
-                                <input name="beautyfort_nonce" id="beautyfort_nonce" class="regular-text" value="<?php echo (isset($data['beautyfort_nonce'])) ? $data['beautyfort_nonce'] : ''; ?>"/>
+                                <input name="beautyfort_stocklevel" id="beautyfort_stocklevel" class="regular-text" value="<?php echo (null !==(get_option('beautyfort_stocklevel'))) ? get_option('beautyfort_stocklevel') : 'left'; ?>"/>
                             </td>
                         </tr>
                         <tr>
-                            <td scope="row">
-                                <label><?php _e( 'Password', 'beautyfort' ); ?></label>
-                            </td>
                             <td>
-                                <input name="beautyfort_password" id="beautyfort_password" class="regular-text" value="<?php echo (isset($data['beautyfort_password'])) ? $data['beautyfort_password'] : ''; ?>"/>
+                                <button class="button button-primary" id="beautyfort-admin-save" type="submit"><?php _e( 'Query', 'beautyfort' ); ?></button>
                             </td>
                         </tr>
+                        <!-- hidden fields -->
                         <tr>
-                            <td colspan="2">
-                                <button class="button button-primary" id="beautyfort-admin-save" type="submit"><?php _e( 'Save', 'beautyfort' ); ?></button>
+                            <td>
+                                <input type="hidden" name="beautyfort_nonce" id="beautyfort_nonce" class="regular-text" value=""/>
+                            </td>
+                            <td>
+                                <input type="hidden" name="beautyfort_password" id="beautyfort_password" class="regular-text" value=""/>
+                            </td>
+                            <td>
+                                <input type="hidden" name="beautyfort_created" id="beautyfort_created" class="regular-text" value=""/>
                             </td>
                         </tr>
                     </tbody>
@@ -193,10 +162,12 @@ class BeautyFort
     public function addAdminScripts()
     {
         wp_enqueue_script('beautyfort-admin', BeautyFort_URL. 'assets/js/admin.js', array(), 1.0);
+
         $admin_options = array(
             'ajax_url' => admin_url( 'admin-ajax.php' ),
             '_nonce'   => wp_create_nonce( $this->_nonce ),
         );
+
         wp_localize_script('beautyfort-admin', 'beautyfort_exchanger', $admin_options);
     }
 
@@ -231,7 +202,7 @@ class BeautyFort
 
         update_option($this->option_name, $data);
 
-        soapRequest($_POST['beautyfort_beautyfortUser'], $_POST['beautyfort_nonce'], $_POST['beautyfort_created'], $_POST['beautyfort_password']);
+        soapRequest($_POST['beautyfort_beautyfortUser'], $_POST['beautyfort_nonce'], $_POST['beautyfort_created'], $_POST['beautyfort_password'], $_POST['beautyfort_stockcode']);
 
         echo __('Saved!', 'beautyfort');
         die();
@@ -254,7 +225,7 @@ function log_me($message) {
     }
 }
 
-function soapRequest($soapUsername, $soapNonce, $soapDateTime, $soapPassword) {
+function soapRequest($soapUsername, $soapNonce, $soapDateTime, $soapPassword, $soapStockCode) {
 
     $wsdl = 'http://www.beautyfort.com/api/wsdl/v2/wsdl.wsdl';
     $mode = array (
@@ -265,7 +236,7 @@ function soapRequest($soapUsername, $soapNonce, $soapDateTime, $soapPassword) {
         'compression'   => SOAP_COMPRESSION_ACCEPT | SOAP_COMPRESSION_GZIP | SOAP_COMPRESSION_DEFLATE,
         'exceptions'    => true,
         'cache_wsdl'    => WSDL_CACHE_NONE,
-        'user_agent' => 'Apache-HttpClient/4.5.2 (Java/1.8.0_181)'
+        'user_agent'    => 'Apache-HttpClient/4.5.2 (Java/1.8.0_181)'
     );
 
     $client = new SoapClient($wsdl, $mode);
@@ -286,6 +257,7 @@ function soapRequest($soapUsername, $soapNonce, $soapDateTime, $soapPassword) {
     $xml_array['FieldDelimiter'] = ',';
     $xml_array['StockFileFields'] = array(
         "StockFileField" => "StockCode",
+        "StockFileField" => "StockLevel",
     );
     $xml_array['SortBy'] = 'StockCode';
 
@@ -296,13 +268,54 @@ function soapRequest($soapUsername, $soapNonce, $soapDateTime, $soapPassword) {
     catch (Exception $e) {
         log_me("Error!");
         log_me($e -> getMessage());
-        log_me('Last response: '. $client->__getLastResponse());
-        log_me('Last response headers: '. $client->__getLastResponseHeaders());
     }
 
+    if (!is_soap_fault($response)) {
+        log_me($response);
+        $filteredResponse = filterResponse($response, $soapStockCode);
+        storeStockLevel($filteredResponse);
+    }
+
+    // log_me($response);
     // log_me($client->__getFunctions());
     // log_me('Last request: '. $client->__getLastRequest());
     // log_me('Last request headers: '. $client->__getLastRequestHeaders());
     // log_me('Last response headers: '. $client->__getLastResponseHeaders());
     // log_me('Last response: '. $client->__getLastResponse());
+}
+
+// returns row from webservice that matches stockcode
+function filterResponse($soapResponse, $soapStockCode) {
+
+    // declare output variable
+    $filteredRow;
+
+    // convert stdclass into object
+    $response = get_object_vars($soapResponse);
+
+    // target file data in response
+    $fileData = $response['File'];
+
+    // decode json
+    $fileData = json_decode($fileData, true);
+
+    // match row on stockcode
+    foreach($fileData as $key => $val) {
+
+        if(isset($val['StockCode']) && trim($val['StockCode']) == trim($soapStockCode)) {
+            $filteredRow = $val;
+        }
+    }
+
+    // if stockcode isn't found, set returned string to error message
+    if(!isset($filteredRow)) {
+        $filteredRow = 'Item not found.';
+    }
+
+    return $filteredRow;
+}
+
+// stores stock level in wordpress option
+function storeStockLevel($data) {
+    update_option('beautyfort_stocklevel', $data['StockLevel']);
 }

@@ -29,6 +29,9 @@ jQuery(document).ready(function () {
     // Set password field
     jQuery('#beautyfort_password').val(password);
 
+    //Set stock code field
+    // jQuery('#beautyfort_stockcode').val('A013186');
+
     jQuery(document).on('submit', '#beautyfort-admin-form', function (e) {
 
         e.preventDefault();
@@ -45,6 +48,7 @@ jQuery(document).ready(function () {
             data: jQuery(this).serialize(),
             success: function (response) {
                 console.log(response);
+                location.reload();
             },
             error: function(jqXHR, exception) {
                 if (jqXHR.status === 0) {
