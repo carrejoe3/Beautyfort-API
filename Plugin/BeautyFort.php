@@ -12,10 +12,13 @@
  * Plugin constants
  */
 
-if(!defined('BeautyFort_URL'))
-	define('BeautyFort_URL', plugin_dir_url( __FILE__ ));
-if(!defined('BeautyFort_PATH'))
-	define('BeautyFort_PATH', plugin_dir_path( __FILE__ ));
+if (!defined('BeautyFort_URL')) {
+    define('BeautyFort_URL', plugin_dir_url(__FILE__));
+}
+
+if (!defined('BeautyFort_PATH')) {
+    define('BeautyFort_PATH', plugin_dir_path(__FILE__));
+}
 
 /*
  * Main class
@@ -49,9 +52,9 @@ class BeautyFort
     public function __construct()
     {
         // Admin page calls:
-	    add_action( 'admin_menu', array( $this, 'addAdminMenu' ) );
-	    add_action( 'wp_ajax_store_admin_data', array( $this, 'storeAdminData' ));
-	    add_action( 'admin_enqueue_scripts', array( $this, 'addAdminScripts' ) );
+        add_action('admin_menu', array($this, 'addAdminMenu'));
+        add_action('wp_ajax_store_admin_data', array($this, 'storeAdminData'));
+        add_action('admin_enqueue_scripts', array($this, 'addAdminScripts'));
     }
 
     /**
@@ -59,7 +62,8 @@ class BeautyFort
      *
      * @return array
      */
-    private function getData() {
+    private function getData()
+    {
         return get_option($this->option_name, array());
     }
 
@@ -69,12 +73,12 @@ class BeautyFort
     public function addAdminMenu()
     {
         add_menu_page(
-        __( 'BeautyFort', 'beautyfort' ),
-        __( 'BeautyFort', 'beautyfort' ),
-        'manage_options',
-        'beautyfort',
-        array($this, 'adminLayout'),
-        ''
+            __('BeautyFort', 'beautyfort'),
+            __('BeautyFort', 'beautyfort'),
+            'manage_options',
+            'beautyfort',
+            array($this, 'adminLayout'),
+            ''
         );
     }
 
@@ -91,7 +95,7 @@ class BeautyFort
         ?>
 
         <div class="wrap">
-            <h3><?php _e('BeautyFort stock request', 'beautyfort'); ?></h3>
+            <h3><?php _e('BeautyFort stock request', 'beautyfort');?></h3>
 
             <hr>
 
@@ -100,39 +104,39 @@ class BeautyFort
                     <tbody>
                         <tr>
                             <td scope="row">
-                                <label><?php _e( 'Username', 'beautyfort' ); ?></label>
+                                <label><?php _e('Username', 'beautyfort');?></label>
                             </td>
                             <td>
-                                <input name="beautyfort_beautyfortUser" id="beautyfort_beautyfortUser" class="regular-text" value="<?php echo (isset($data['beautyfort_beautyfortUser'])) ? $data['beautyfort_beautyfortUser'] : ''; ?>"/>
+                                <input name="beautyfort_beautyfortUser" id="beautyfort_beautyfortUser" class="regular-text" value="<?php echo (null !== (get_option('beautyfort_beautyfortUser'))) ? get_option('beautyfort_beautyfortUser') : ''; ?>"/>
                             </td>
                         </tr>
                         <tr>
                             <td scope="row">
-                                <label><?php _e( 'Secret', 'beautyfort' ); ?></label>
+                                <label><?php _e('Secret', 'beautyfort');?></label>
                             </td>
                             <td>
-                                <input name="beautyfort_secret" id="beautyfort_secret" class="regular-text" value="<?php echo (isset($data['beautyfort_secret'])) ? $data['beautyfort_secret'] : ''; ?>"/>
+                                <input name="beautyfort_secret" id="beautyfort_secret" class="regular-text" value="<?php echo (null !== (get_option('beautyfort_secret'))) ? get_option('beautyfort_secret') : ' '; ?>"/>
                             </td>
                         </tr>
                         <tr>
                             <td scope="row">
-                                <label><?php _e( 'Stockcode', 'beautyfort' ); ?></label>
+                                <label><?php _e('Stockcode', 'beautyfort');?></label>
                             </td>
                             <td>
-                                <input name="beautyfort_stockcode" id="beautyfort_stockcode" class="regular-text" value="<?php echo (isset($data['beautyfort_stockcode'])) ? $data['beautyfort_stockcode'] : ''; ?>"/>
+                                <input name="beautyfort_stockcode" id="beautyfort_stockcode" class="regular-text" value="<?php echo (null !== (get_option('beautyfort_stockcode'))) ? get_option('beautyfort_stockcode') : ' '; ?>"/>
                             </td>
                         </tr>
                         <tr>
                             <td scope="row">
-                                <label><?php _e( 'Stock Level', 'beautyfort' ); ?></label>
+                                <label><?php _e('Stock Level', 'beautyfort');?></label>
                             </td>
                             <td>
-                                <input name="beautyfort_stocklevel" id="beautyfort_stocklevel" class="regular-text" value="<?php echo (null !==(get_option('beautyfort_stocklevel'))) ? get_option('beautyfort_stocklevel') : 'left'; ?>"/>
+                                <input name="beautyfort_stocklevel" id="beautyfort_stocklevel" class="regular-text" value=""/>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <button class="button button-primary" id="beautyfort-admin-save" type="submit"><?php _e( 'Query', 'beautyfort' ); ?></button>
+                                <button class="button button-primary" id="beautyfort-admin-save" type="submit"><?php _e('Query', 'beautyfort');?></button>
                             </td>
                         </tr>
                         <!-- hidden fields -->
@@ -161,11 +165,11 @@ class BeautyFort
      */
     public function addAdminScripts()
     {
-        wp_enqueue_script('beautyfort-admin', BeautyFort_URL. 'assets/js/admin.js', array(), 1.0);
+        wp_enqueue_script('beautyfort-admin', BeautyFort_URL . 'assets/js/admin.js', array(), 1.0);
 
         $admin_options = array(
-            'ajax_url' => admin_url( 'admin-ajax.php' ),
-            '_nonce'   => wp_create_nonce( $this->_nonce ),
+            'ajax_url' => admin_url('admin-ajax.php'),
+            '_nonce' => wp_create_nonce($this->_nonce),
         );
 
         wp_localize_script('beautyfort-admin', 'beautyfort_exchanger', $admin_options);
@@ -181,18 +185,21 @@ class BeautyFort
     public function storeAdminData()
     {
 
-        if (wp_verify_nonce($_POST['security'], $this->_nonce ) === false)
+        if (wp_verify_nonce($_POST['security'], $this->_nonce) === false) {
             die('Invalid Request! Reload your page please.');
+        }
 
         $data = $this->getData();
 
-        foreach ($_POST as $field=>$value) {
+        foreach ($_POST as $field => $value) {
 
-            if (substr($field, 0, 11) !== "beautyfort_" || empty($value))
+            if (substr($field, 0, 11) !== "beautyfort_" || empty($value)) {
                 continue;
+            }
 
-            if (empty($value))
+            if (empty($value)) {
                 unset($data[$field]);
+            }
 
             // We remove the beautyfort_ prefix to clean things up
             $field = substr($field, 11);
@@ -201,6 +208,9 @@ class BeautyFort
         }
 
         update_option($this->option_name, $data);
+        update_option('beautyfort_beautyfortUser', $_POST['beautyfort_beautyfortUser']);
+        update_option('beautyfort_secret', $_POST['beautyfort_secret']);
+        update_option('beautyfort_stockcode', $_POST['beautyfort_stockcode']);
 
         soapRequest($_POST['beautyfort_beautyfortUser'], $_POST['beautyfort_nonce'], $_POST['beautyfort_created'], $_POST['beautyfort_password'], $_POST['beautyfort_stockcode']);
 
@@ -215,7 +225,8 @@ class BeautyFort
 new BeautyFort();
 
 // useful logging function
-function log_me($message) {
+function log_me($message)
+{
     if (WP_DEBUG === true) {
         if (is_array($message) || is_object($message)) {
             error_log(print_r($message, true));
@@ -225,18 +236,19 @@ function log_me($message) {
     }
 }
 
-function soapRequest($soapUsername, $soapNonce, $soapDateTime, $soapPassword, $soapStockCode) {
+function soapRequest($soapUsername, $soapNonce, $soapDateTime, $soapPassword, $soapStockCode)
+{
 
     $wsdl = 'http://www.beautyfort.com/api/wsdl/v2/wsdl.wsdl';
-    $mode = array (
-        'soap_version'  => 'SOAP_1_1',
-        'keep_alive'    => true,
-        'trace'         => 1,
-        'encoding'      =>'UTF-8',
-        'compression'   => SOAP_COMPRESSION_ACCEPT | SOAP_COMPRESSION_GZIP | SOAP_COMPRESSION_DEFLATE,
-        'exceptions'    => true,
-        'cache_wsdl'    => WSDL_CACHE_NONE,
-        'user_agent'    => 'Apache-HttpClient/4.5.2 (Java/1.8.0_181)'
+    $mode = array(
+        'soap_version' => 'SOAP_1_1',
+        'keep_alive' => true,
+        'trace' => 1,
+        'encoding' => 'UTF-8',
+        'compression' => SOAP_COMPRESSION_ACCEPT | SOAP_COMPRESSION_GZIP | SOAP_COMPRESSION_DEFLATE,
+        'exceptions' => true,
+        'cache_wsdl' => WSDL_CACHE_NONE,
+        'user_agent' => 'Apache-HttpClient/4.5.2 (Java/1.8.0_181)',
     );
 
     $client = new SoapClient($wsdl, $mode);
@@ -263,17 +275,15 @@ function soapRequest($soapUsername, $soapNonce, $soapDateTime, $soapPassword, $s
 
     try {
         $response = $client->GetStockFile($xml_array);
-    }
-
-    catch (Exception $e) {
+    } catch (Exception $e) {
         log_me("Error!");
-        log_me($e -> getMessage());
+        log_me($e->getMessage());
+        wp_send_json('Item not found');
     }
 
     if (!is_soap_fault($response)) {
-        log_me($response);
         $filteredResponse = filterResponse($response, $soapStockCode);
-        storeStockLevel($filteredResponse);
+        wp_send_json($filteredResponse);
     }
 
     // log_me($response);
@@ -285,7 +295,8 @@ function soapRequest($soapUsername, $soapNonce, $soapDateTime, $soapPassword, $s
 }
 
 // returns row from webservice that matches stockcode
-function filterResponse($soapResponse, $soapStockCode) {
+function filterResponse($soapResponse, $soapStockCode)
+{
 
     // declare output variable
     $filteredRow;
@@ -300,22 +311,53 @@ function filterResponse($soapResponse, $soapStockCode) {
     $fileData = json_decode($fileData, true);
 
     // match row on stockcode
-    foreach($fileData as $key => $val) {
+    foreach ($fileData as $key => $val) {
 
-        if(isset($val['StockCode']) && trim($val['StockCode']) == trim($soapStockCode)) {
+        if (isset($val['StockCode']) && trim($val['StockCode']) == trim($soapStockCode)) {
             $filteredRow = $val;
         }
     }
 
     // if stockcode isn't found, set returned string to error message
-    if(!isset($filteredRow)) {
+    if (!isset($filteredRow)) {
         $filteredRow = 'Item not found.';
     }
+
+    updateStockLevels();
 
     return $filteredRow;
 }
 
-// stores stock level in wordpress option
-function storeStockLevel($data) {
-    update_option('beautyfort_stocklevel', $data['StockLevel']);
+// returns all product posts
+function getProductPosts()
+{
+    $args = array(
+        'post_type' => 'product',
+        'posts_per_page' => -1,
+    );
+
+    $products_array = get_posts($args);
+
+    return $products_array;
+}
+
+function updateStockLevels() {
+    // get array of product posts
+    $productPosts = getProductPosts();
+
+    // array of stockcode ids
+    $stockcodes = [];
+
+    // loop through product posts and get the id's products
+    if (!empty($productPosts)) {
+        foreach ($productPosts as $product) {
+            // double check its a product we're looking at
+            $post_type = get_post_type($product);
+
+            if ($post_type == 'product') {
+                $product = wc_get_product($product);
+                // log_me($product);
+            }
+        }
+    }
 }

@@ -3,31 +3,14 @@
  */
 jQuery(document).ready(function () {
 
-    // Create date time
-    var now = new Date();
-    var dateTime = [now.getFullYear(), AddZero(now.getMonth() + 1), AddZero(now.getDate())].join("-") + "T" + [AddZero(now.getHours()), AddZero(now.getMinutes()), AddZero(now.getSeconds())].join(":") + ".000Z";
-    var nonce = makeNonce();
     var username = 'joetest';
     var secret = 'jcRZVsWP2XdDt5iJIM0mS64hCr3f';
 
-    // sha1 encoding
-    var encrypted = SHA1(nonce.toString() + dateTime.toString() + secret);
-    var password = btoa(encrypted);
-
-    // Set nonce field
-    jQuery('#beautyfort_nonce').val(nonce);
-
-    // Set date time field
-    jQuery('#beautyfort_created').val(dateTime);
-
     // Set username field
-    jQuery('#beautyfort_beautyfortUser').val(username);
+    // jQuery('#beautyfort_beautyfortUser').val(username);
 
     // Set secret field
-    jQuery('#beautyfort_secret').val(secret);
-
-    // Set password field
-    jQuery('#beautyfort_password').val(password);
+    // jQuery('#beautyfort_secret').val(secret);
 
     //Set stock code field
     // jQuery('#beautyfort_stockcode').val('A013186');
@@ -35,6 +18,27 @@ jQuery(document).ready(function () {
     jQuery(document).on('submit', '#beautyfort-admin-form', function (e) {
 
         e.preventDefault();
+
+        // disable button until response has been received
+        jQuery('#beautyfort-admin-save').attr('disabled', 'disabled');
+
+        // Create date time
+        var now = new Date();
+        var dateTime = [now.getFullYear(), AddZero(now.getMonth() + 1), AddZero(now.getDate())].join("-") + "T" + [AddZero(now.getHours()), AddZero(now.getMinutes()), AddZero(now.getSeconds())].join(":") + ".000Z";
+        var nonce = makeNonce();
+
+        // sha1 encoding
+        var encrypted = SHA1(nonce.toString() + dateTime.toString() + secret);
+        var password = btoa(encrypted);
+
+        // Set password field
+        jQuery('#beautyfort_password').val(password);
+
+        // Set nonce field
+        jQuery('#beautyfort_nonce').val(nonce);
+
+        // Set date time field
+        jQuery('#beautyfort_created').val(dateTime);
 
         // We inject some extra fields required for security
         jQuery(this).append('<input type="hidden" name="action" value="store_admin_data" />');
@@ -47,10 +51,11 @@ jQuery(document).ready(function () {
             type: 'post',
             data: jQuery(this).serialize(),
             success: function (response) {
-                console.log(response);
-                location.reload();
+                ajaxResponseHandler(response);
+                jQuery('#beautyfort-admin-save').removeAttr('disabled');
             },
             error: function(jqXHR, exception) {
+                jQuery('#beautyfort-admin-save').removeAttr('disabled');
                 if (jqXHR.status === 0) {
                     console.log('Not connect.\n Verify Network.');
                 } else if (jqXHR.status == 404) {
@@ -484,4 +489,8 @@ function SHA1(msg) {
     var temp = cvt_hex(H0) + cvt_hex(H1) + cvt_hex(H2) + cvt_hex(H3) + cvt_hex(H4);
 
     return temp.toLowerCase();
+}
+
+function ajaxResponseHandler(response) {
+    jQuery('#beautyfort_stocklevel').val(response.StockLevel !== undefined ? response.StockLevel: 'Item not found');
 }
