@@ -282,6 +282,7 @@ function soapRequest($soapUsername, $soapNonce, $soapDateTime, $soapPassword, $s
     }
 
     if (!is_soap_fault($response)) {
+        updateStockLevels($response);
         $filteredResponse = filterResponse($response, $soapStockCode);
         wp_send_json($filteredResponse);
     }
@@ -297,18 +298,11 @@ function soapRequest($soapUsername, $soapNonce, $soapDateTime, $soapPassword, $s
 // returns row from webservice that matches stockcode
 function filterResponse($soapResponse, $soapStockCode)
 {
-
     // declare output variable
     $filteredRow;
 
-    // convert stdclass into object
-    $response = get_object_vars($soapResponse);
-
-    // target file data in response
-    $fileData = $response['File'];
-
-    // decode json
-    $fileData = json_decode($fileData, true);
+    // clean up response data
+    $fileData = extractFileDataFromResponse($soapResponse);
 
     // match row on stockcode
     foreach ($fileData as $key => $val) {
@@ -322,8 +316,6 @@ function filterResponse($soapResponse, $soapStockCode)
     if (!isset($filteredRow)) {
         $filteredRow = 'Item not found.';
     }
-
-    updateStockLevels();
 
     return $filteredRow;
 }
@@ -341,7 +333,34 @@ function getProductPosts()
     return $products_array;
 }
 
-function updateStockLevels() {
+function updateStockLevels($data)
+{
+    $stockcodes = getStockCodes();
+
+    // clean up response data
+    $data = extractFileDataFromResponse($data);
+
+    // declare response ids array to be used later
+    $responseIds = [];
+
+    // loop through both arrays
+    for ($i = 0; $i < count($stockcodes); $i++) {
+        foreach ($data as $value) {
+            // match on stockcode
+            if ($value['StockCode'] == $stockcodes[$i]) {
+                global $woocommerce;
+                // get product id
+                $product_id = wc_get_product_id_by_sku($stockcodes[$i]);
+                $woocmmerce_instance = new WC_Product($product_id);
+                $new_quantity = wc_update_product_stock($woocmmerce_instance, $value['StockLevel']);
+                log_me($woocmmerce_instance);
+            }
+        }
+    }
+}
+
+function getStockCodes()
+{
     // get array of product posts
     $productPosts = getProductPosts();
 
@@ -356,8 +375,25 @@ function updateStockLevels() {
 
             if ($post_type == 'product') {
                 $product = wc_get_product($product);
-                // log_me($product);
+                // push stockcode to stockcode array
+                array_push($stockcodes, $product->get_sku());
             }
         }
     }
+
+    return $stockcodes;
+}
+
+function extractFileDataFromResponse($data)
+{
+    // convert stdclass into object
+    $data = get_object_vars($data);
+
+    // target file data in response
+    $fileData = $data['File'];
+
+    // decode json
+    $fileData = json_decode($fileData, true);
+
+    return $fileData;
 }
